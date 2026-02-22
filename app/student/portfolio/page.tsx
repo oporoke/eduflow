@@ -210,7 +210,7 @@ export default function PortfolioPage() {
                 {item.content && (
                   <p className="text-sm text-gray-700 mb-2 whitespace-pre-line">{item.content}</p>
                 )}
-                {item.fileUrl && ( href={item.fileUrl}
+                {item.fileUrl && ( <a href={item.fileUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-600 text-sm hover:underline"
