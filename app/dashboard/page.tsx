@@ -194,6 +194,10 @@ export default async function DashboardPage() {
                     <h2 className="text-lg font-semibold">Browse Classes</h2>
                     <p className="text-gray-500 text-sm mt-1">Find and enroll in available classes</p>
                   </Link>
+                  <Link href="/student/portfolio" className="bg-white rounded shadow p-6 hover:shadow-md transition">
+                    <h2 className="text-lg font-semibold">My Portfolio</h2>
+                    <p className="text-gray-500 text-sm mt-1">Showcase your best work and achievements</p>
+                  </Link>
                 </div>
                 <Leaderboard />
               </div>
