@@ -146,6 +146,12 @@ export default async function DashboardPage() {
                     >
                       Competencies
                     </Link>
+                      <Link
+                        href={`/teacher/calendar/${c.id}`}
+                        className="bg-teal-600 text-white px-3 py-1 rounded text-sm hover:bg-teal-700"
+                      >
+                        Calendar
+                      </Link>
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">

@@ -69,6 +69,7 @@ model Classroom {
   subjects     Subject[]
   liveSessions LiveSession[]
   ieps         IEP[]
+  schoolTerms  SchoolTerm[]
 }
 
 model Enrollment {
@@ -90,7 +91,8 @@ model Subject {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  topics Topic[]
+  topics    Topic[]
+  weekPlans WeekPlan[]
 }
 
 model Topic {
@@ -102,6 +104,7 @@ model Topic {
   updatedAt DateTime @updatedAt
 
   subtopics Subtopic[]
+  weekPlans WeekPlan[]
 }
 
 model Subtopic {
@@ -415,4 +418,31 @@ model PortfolioItem {
   fileUrl     String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+}
+
+model SchoolTerm {
+  id          String    @id @default(cuid())
+  name        String
+  startDate   DateTime
+  endDate     DateTime
+  classroom   Classroom @relation(fields: [classroomId], references: [id])
+  classroomId String
+  createdAt   DateTime  @default(now())
+
+  weekPlans WeekPlan[]
+}
+
+model WeekPlan {
+  id         String     @id @default(cuid())
+  term       SchoolTerm @relation(fields: [termId], references: [id])
+  termId     String
+  weekNumber Int
+  subject    Subject    @relation(fields: [subjectId], references: [id])
+  subjectId  String
+  topic      Topic      @relation(fields: [topicId], references: [id])
+  topicId    String
+  notes      String?
+  completed  Boolean    @default(false)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
 }
