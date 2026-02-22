@@ -65,6 +65,8 @@ model User {
   announcements         Announcement[]
   teacherMeetings       PTMeeting[]            @relation("TeacherMeetings")
   studentMeetings       PTMeeting[]            @relation("StudentMeetings")
+  emergencyAlerts       EmergencyAlert[]
+  alertAcknowledgements AlertAcknowledgement[]
 }
 
 model Classroom {
@@ -627,4 +629,29 @@ model PTMeeting {
   status    String   @default("SCHEDULED")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model EmergencyAlert {
+  id        String   @id @default(cuid())
+  title     String
+  message   String
+  severity  String   @default("HIGH")
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  acknowledgements AlertAcknowledgement[]
+}
+
+model AlertAcknowledgement {
+  id        String         @id @default(cuid())
+  alert     EmergencyAlert @relation(fields: [alertId], references: [id])
+  alertId   String
+  userId    String
+  createdAt DateTime       @default(now())
+  user      User           @relation(fields: [userId], references: [id])
+
+  @@unique([alertId, userId])
 }

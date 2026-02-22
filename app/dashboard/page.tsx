@@ -114,6 +114,10 @@ export default async function DashboardPage() {
                   <h3 className="font-semibold text-sm">Parent-Teacher Meetings</h3>
                   <p className="text-gray-500 text-xs mt-1">View and manage scheduled meetings with parents</p>
                 </Link>
+                <Link href="/admin/alerts" className="bg-red-50 border border-red-200 rounded shadow p-6 hover:shadow-md transition">
+                  <h2 className="text-lg font-semibold text-red-700">🚨 Emergency Alerts</h2>
+                  <p className="text-gray-500 text-sm mt-1">Send urgent notifications to all users</p>
+                </Link>
               </div>
             </div>
           )}

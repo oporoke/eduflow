@@ -6,6 +6,7 @@ import "@uploadthing/react/styles.css";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 import InstallPrompt from "@/components/InstallPrompt";
 import AccessibilityToolbar from "@/components/AccessibilityToolbar";
+import EmergencyAlertBanner from "@/components/EmergencyAlertBanner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -58,6 +59,7 @@ export default function RootLayout({
 
         <Providers>
           <a href="#main-content" className="skip-link">Skip to main content</a>
+          <EmergencyAlertBanner />
           <ServiceWorkerRegistration />
           <InstallPrompt />
           <AccessibilityToolbar />
