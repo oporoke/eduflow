@@ -63,6 +63,8 @@ model User {
   observedLessons       LessonObservation[]    @relation("ObservedTeacher")
   conductedObservations LessonObservation[]    @relation("ObserverUser")
   announcements         Announcement[]
+  teacherMeetings       PTMeeting[]            @relation("TeacherMeetings")
+  studentMeetings       PTMeeting[]            @relation("StudentMeetings")
 }
 
 model Classroom {
@@ -319,7 +321,8 @@ model Parent {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  children ParentChild[]
+  children   ParentChild[]
+  ptmeetings PTMeeting[]
 }
 
 model ParentChild {
@@ -606,4 +609,22 @@ model AnnouncementRead {
   createdAt      DateTime     @default(now())
 
   @@unique([announcementId, userId])
+}
+
+model PTMeeting {
+  id        String   @id @default(cuid())
+  teacher   User     @relation("TeacherMeetings", fields: [teacherId], references: [id])
+  teacherId String
+  parent    Parent   @relation(fields: [parentId], references: [id])
+  parentId  String
+  student   User     @relation("StudentMeetings", fields: [studentId], references: [id])
+  studentId String
+  date      DateTime
+  duration  Int      @default(30)
+  venue     String?
+  agenda    String?
+  notes     String?
+  status    String   @default("SCHEDULED")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

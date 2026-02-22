@@ -55,6 +55,13 @@ export default function ParentDashboardPage() {
             <h1 className="text-2xl font-bold">Parent Dashboard</h1>
             <p className="text-gray-500 text-sm">Monitor your children's learning progress</p>
           </div>
+          <div
+            onClick={() => router.push("/parent/meetings")}
+            className="bg-white rounded shadow p-6 cursor-pointer hover:shadow-md transition"
+          >
+            <h3 className="text-lg font-semibold">Meetings</h3>
+            <p className="text-gray-500 text-sm mt-1">Schedule and manage meetings with teachers</p>
+          </div>
           <button
             onClick={handleLogout}
             className="text-sm text-red-500 hover:underline"

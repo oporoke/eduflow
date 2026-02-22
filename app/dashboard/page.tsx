@@ -110,6 +110,10 @@ export default async function DashboardPage() {
                   <h2 className="text-lg font-semibold">Lesson Observations</h2>
                   <p className="text-gray-500 text-sm mt-1">Schedule and conduct teacher observations</p>
                 </Link>
+                <Link href="/teacher/meetings" className="bg-white rounded shadow p-4 hover:shadow-md transition block mt-3">
+                  <h3 className="font-semibold text-sm">Parent-Teacher Meetings</h3>
+                  <p className="text-gray-500 text-xs mt-1">View and manage scheduled meetings with parents</p>
+                </Link>
               </div>
             </div>
           )}
