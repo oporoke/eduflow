@@ -60,6 +60,8 @@ model User {
   assignmentSubmissions AssignmentSubmission[]
   teacherRubrics        Rubric[]               @relation("TeacherRubrics")
   rubrics               Rubric[]
+  observedLessons       LessonObservation[]    @relation("ObservedTeacher")
+  conductedObservations LessonObservation[]    @relation("ObserverUser")
 }
 
 model Classroom {
@@ -71,13 +73,14 @@ model Classroom {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  enrollments  Enrollment[]
-  subjects     Subject[]
-  liveSessions LiveSession[]
-  ieps         IEP[]
-  schoolTerms  SchoolTerm[]
-  assignments  Assignment[]
-  rubrics      Rubric[]
+  enrollments        Enrollment[]
+  subjects           Subject[]
+  liveSessions       LiveSession[]
+  ieps               IEP[]
+  schoolTerms        SchoolTerm[]
+  assignments        Assignment[]
+  rubrics            Rubric[]
+  lessonObservations LessonObservation[]
 }
 
 model Enrollment {
@@ -539,4 +542,42 @@ model RubricScore {
   createdAt    DateTime             @default(now())
 
   @@unique([criteriaId, submissionId])
+}
+
+model LessonObservation {
+  id          String    @id @default(cuid())
+  teacher     User      @relation("ObservedTeacher", fields: [teacherId], references: [id])
+  teacherId   String
+  observer    User      @relation("ObserverUser", fields: [observerId], references: [id])
+  observerId  String
+  classroom   Classroom @relation(fields: [classroomId], references: [id])
+  classroomId String
+  date        DateTime
+  topic       String
+  status      String    @default("SCHEDULED")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  ratings  ObservationRating[]
+  comments ObservationComment[]
+}
+
+model ObservationRating {
+  id            String            @id @default(cuid())
+  observation   LessonObservation @relation(fields: [observationId], references: [id])
+  observationId String
+  criteria      String
+  rating        Int
+  createdAt     DateTime          @default(now())
+
+  @@unique([observationId, criteria])
+}
+
+model ObservationComment {
+  id            String            @id @default(cuid())
+  observation   LessonObservation @relation(fields: [observationId], references: [id])
+  observationId String
+  type          String
+  comment       String
+  createdAt     DateTime          @default(now())
 }

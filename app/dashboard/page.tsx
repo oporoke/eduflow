@@ -89,17 +89,26 @@ export default async function DashboardPage() {
 
         {/* ADMIN */}
         {role === "ADMIN" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Link href="/admin/classes" className="bg-white rounded shadow p-6 hover:shadow-md transition">
-              <h2 className="text-lg font-semibold">Manage Classes</h2>
-              <p className="text-gray-500 text-sm mt-1">Create classes and enroll students</p>
-            </Link>
-            <Link href="/admin/users" className="bg-white rounded shadow p-6 hover:shadow-md transition">
-              <h2 className="text-lg font-semibold">Manage Users</h2>
-              <p className="text-gray-500 text-sm mt-1">View and manage all users</p>
-            </Link>
-          </div>
-        )}
+            <div>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold">Administration</h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Link href="/admin/classes" className="bg-white rounded shadow p-6 hover:shadow-md transition">
+                  <h2 className="text-lg font-semibold">Manage Classes</h2>
+                  <p className="text-gray-500 text-sm mt-1">Create and manage classes</p>
+                </Link>
+                <Link href="/admin/users" className="bg-white rounded shadow p-6 hover:shadow-md transition">
+                  <h2 className="text-lg font-semibold">Manage Users</h2>
+                  <p className="text-gray-500 text-sm mt-1">View and manage all users</p>
+                </Link>
+                <Link href="/admin/observations" className="bg-white rounded shadow p-6 hover:shadow-md transition">
+                  <h2 className="text-lg font-semibold">Lesson Observations</h2>
+                  <p className="text-gray-500 text-sm mt-1">Schedule and conduct teacher observations</p>
+                </Link>
+              </div>
+            </div>
+          )}
 
         {/* TEACHER */}
         {role === "TEACHER" && teacherStats && (
@@ -163,6 +172,10 @@ export default async function DashboardPage() {
                         className="bg-pink-600 text-white px-3 py-1 rounded text-sm hover:bg-pink-700"
                       >
                         Rubrics
+                      </Link>
+                        <Link href="/teacher/observations" className="bg-white rounded shadow p-4 hover:shadow-md transition block">
+                        <h3 className="font-semibold text-sm">My Observations</h3>
+                        <p className="text-gray-500 text-xs mt-1">View feedback from lesson observations</p>
                       </Link>
                     </div>
 
