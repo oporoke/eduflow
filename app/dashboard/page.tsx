@@ -77,6 +77,9 @@ export default async function DashboardPage() {
             <span className="text-sm text-gray-500 capitalize">{role.toLowerCase()}</span>
           </div>
           <div className="flex gap-4">
+            <Link href="/announcements" className="text-sm text-gray-600 hover:text-blue-600">
+              📢 Announcements
+            </Link>
             <SearchBar />
             <NotificationBell/>
             <Link href="/profile" className="text-sm text-blue-600 hover:underline">

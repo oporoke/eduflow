@@ -62,6 +62,7 @@ model User {
   rubrics               Rubric[]
   observedLessons       LessonObservation[]    @relation("ObservedTeacher")
   conductedObservations LessonObservation[]    @relation("ObserverUser")
+  announcements         Announcement[]
 }
 
 model Classroom {
@@ -580,4 +581,29 @@ model ObservationComment {
   type          String
   comment       String
   createdAt     DateTime          @default(now())
+}
+
+model Announcement {
+  id          String   @id @default(cuid())
+  title       String
+  body        String
+  author      User     @relation(fields: [authorId], references: [id])
+  authorId    String
+  audience    String   @default("ALL")
+  classroomId String?
+  pinned      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  reads AnnouncementRead[]
+}
+
+model AnnouncementRead {
+  id             String       @id @default(cuid())
+  announcement   Announcement @relation(fields: [announcementId], references: [id])
+  announcementId String
+  userId         String
+  createdAt      DateTime     @default(now())
+
+  @@unique([announcementId, userId])
 }
