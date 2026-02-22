@@ -134,6 +134,10 @@ export default async function DashboardPage() {
                   <h2 className="text-lg font-semibold">Bursary & Scholarships</h2>
                   <p className="text-gray-500 text-sm mt-1">Manage student financial assistance programs</p>
                 </Link>
+                <Link href="/admin/budget" className="bg-white rounded shadow p-6 hover:shadow-md transition">
+                  <h2 className="text-lg font-semibold">Budget Planning</h2>
+                  <p className="text-gray-500 text-sm mt-1">Plan and track school financial budgets</p>
+                </Link>
               </div>
             </div>
           )}

@@ -73,6 +73,7 @@ model User {
   bookBorrowings        BookBorrowing[]
   assets                Asset[]
   bursaryApplications   BursaryApplication[]
+  budgets               Budget[]
 }
 
 model StaffProfile {
@@ -839,4 +840,30 @@ model BursaryApplication {
   updatedAt  DateTime       @updatedAt
 
   @@unique([programId, studentId])
+}
+
+model Budget {
+  id           String   @id @default(cuid())
+  title        String
+  academicYear String
+  totalAmount  Float
+  createdBy    User     @relation(fields: [createdById], references: [id])
+  createdById  String
+  status       String   @default("DRAFT")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  items BudgetItem[]
+}
+
+model BudgetItem {
+  id          String   @id @default(cuid())
+  budget      Budget   @relation(fields: [budgetId], references: [id])
+  budgetId    String
+  category    String
+  description String
+  planned     Float
+  actual      Float    @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
