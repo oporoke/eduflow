@@ -158,6 +158,12 @@ export default async function DashboardPage() {
                       >
                         Assignments
                       </Link>
+                      <Link
+                        href={`/teacher/rubrics/${c.id}`}
+                        className="bg-pink-600 text-white px-3 py-1 rounded text-sm hover:bg-pink-700"
+                      >
+                        Rubrics
+                      </Link>
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
