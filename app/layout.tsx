@@ -4,6 +4,7 @@ import "./globals.css";
 import Providers from "@/app/providers";
 import "@uploadthing/react/styles.css";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
+import InstallPrompt from "@/components/InstallPrompt";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,8 +17,24 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "EduFlow",
-  description: "Open School On Me",
+  title: "EduFlow - Digital Learning Platform",
+  description: "CBC-aligned Learning Management System for Kenyan Schools",
+  manifest: "/manifest.json",
+  themeColor: "#2563eb",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "EduFlow",
+  },
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+  },
+  icons: {
+    icon: "/icons/icon-192x192.png",
+    apple: "/icons/icon-152x152.png",
+  },
 };
 
 export default function RootLayout({
@@ -27,10 +44,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#2563eb" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="EduFlow" />
+        <link rel="apple-touch-icon" href="/icons/icon-152x152.png" />
+        <title>EduFlow - Digital Learning Platform</title>
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
 
         <Providers>
           <ServiceWorkerRegistration />
+          <InstallPrompt />
           {children}
         </Providers>
       </body>
