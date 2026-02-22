@@ -50,12 +50,21 @@ export default function ClassesPage() {
                     </button>
                   )}
                   {role === "STUDENT" && (
-                    <button
-                      onClick={() => router.push(`/student/classes/${c.id}`)}
-                      className="bg-blue-600 text-white px-4 py-1 rounded text-sm hover:bg-blue-700"
-                    >
-                      View Curriculum
-                    </button>
+                    <div className="flex gap-2 mt-3">
+                      <button
+                        onClick={() => router.push(`/student/classes/${c.id}`)}
+                        className="bg-blue-600 text-white px-4 py-1 rounded text-sm hover:bg-blue-700"
+                      >
+                        View Curriculum
+                      </button>
+                      <button
+                        onClick={() => router.push(`/student/live/${c.id}`)}
+                        className="bg-red-600 text-white px-4 py-1 rounded text-sm hover:bg-red-700 flex items-center gap-1"
+                      >
+                        <span className="w-2 h-2 bg-white rounded-full animate-pulse inline-block"></span>
+                        Join Live
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>

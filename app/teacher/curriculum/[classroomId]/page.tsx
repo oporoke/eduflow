@@ -133,6 +133,7 @@ export default function CurriculumPage({ params }: { params: Promise<{ classroom
                 {/* Subtopics */}
 
                 {/* Subtopics */}
+                {/* Subtopics */}
                 {topic.subtopics.map((subtopic: any) => (
                   <div key={subtopic.id} className="ml-4 flex items-center justify-between text-sm text-gray-600 py-1">
                     <span>• {subtopic.name}</span>
@@ -148,6 +149,12 @@ export default function CurriculumPage({ params }: { params: Promise<{ classroom
                         className="text-green-600 hover:underline text-xs"
                       >
                         Manage Quizzes
+                      </button>
+                      <button
+                        onClick={() => router.push(`/teacher/present/${subtopic.id}`)}
+                        className="text-orange-600 hover:underline text-xs font-semibold"
+                      >
+                        ▶ Present
                       </button>
                     </div>
                   </div>
