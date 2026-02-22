@@ -2,6 +2,7 @@
 
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
+import CommentSection from "@/components/CommentSection";
 
 export default function StudentLessonsPage({ params }: { params: Promise<{ subtopicId: string }> }) {
   const { subtopicId } = use(params);
