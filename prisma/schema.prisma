@@ -19,6 +19,13 @@ enum Role {
   STUDENT
 }
 
+enum ContentType {
+  TEXT
+  IMAGE
+  VIDEO
+  MIXED
+}
+
 model User {
   id        String   @id @default(cuid())
   name      String
@@ -27,4 +34,143 @@ model User {
   role      Role     @default(STUDENT)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  taughtClasses   Classroom[]      @relation("TeacherClasses")
+  enrolledClasses Enrollment[]
+  lessonProgress  LessonProgress[]
+  quizAttempts    QuizAttempt[]
+  notifications   Notification[]
+}
+
+model Classroom {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  teacher     User     @relation("TeacherClasses", fields: [teacherId], references: [id])
+  teacherId   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  enrollments Enrollment[]
+  subjects    Subject[]
+}
+
+model Enrollment {
+  id          String    @id @default(cuid())
+  student     User      @relation(fields: [studentId], references: [id])
+  studentId   String
+  classroom   Classroom @relation(fields: [classroomId], references: [id])
+  classroomId String
+  createdAt   DateTime  @default(now())
+
+  @@unique([studentId, classroomId])
+}
+
+model Subject {
+  id          String    @id @default(cuid())
+  name        String
+  classroom   Classroom @relation(fields: [classroomId], references: [id])
+  classroomId String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  topics Topic[]
+}
+
+model Topic {
+  id        String   @id @default(cuid())
+  name      String
+  subject   Subject  @relation(fields: [subjectId], references: [id])
+  subjectId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subtopics Subtopic[]
+}
+
+model Subtopic {
+  id        String   @id @default(cuid())
+  name      String
+  topic     Topic    @relation(fields: [topicId], references: [id])
+  topicId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  lessons Lesson[]
+  quizzes Quiz[]
+}
+
+model Lesson {
+  id          String      @id @default(cuid())
+  title       String
+  contentType ContentType
+  text        String?
+  imageUrl    String?
+  videoUrl    String?
+  subtopic    Subtopic    @relation(fields: [subtopicId], references: [id])
+  subtopicId  String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  progress LessonProgress[]
+}
+
+model LessonProgress {
+  id        String   @id @default(cuid())
+  student   User     @relation(fields: [studentId], references: [id])
+  studentId String
+  lesson    Lesson   @relation(fields: [lessonId], references: [id])
+  lessonId  String
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([studentId, lessonId])
+}
+
+model Quiz {
+  id         String   @id @default(cuid())
+  title      String
+  subtopic   Subtopic @relation(fields: [subtopicId], references: [id])
+  subtopicId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  questions Question[]
+  attempts  QuizAttempt[]
+}
+
+model Question {
+  id            String   @id @default(cuid())
+  text          String
+  optionA       String
+  optionB       String
+  optionC       String
+  optionD       String
+  correctAnswer String
+  quiz          Quiz     @relation(fields: [quizId], references: [id])
+  quizId        String
+  createdAt     DateTime @default(now())
+}
+
+model QuizAttempt {
+  id        String   @id @default(cuid())
+  student   User     @relation(fields: [studentId], references: [id])
+  studentId String
+  quiz      Quiz     @relation(fields: [quizId], references: [id])
+  quizId    String
+  score     Int
+  total     Int
+  createdAt DateTime @default(now())
+
+  @@unique([studentId, quizId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  message   String
+  read      Boolean  @default(false)
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime @default(now())
 }
