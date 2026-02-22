@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import NotificationBell from "@/components/NotificationBell";
 import SearchBar from "@/components/SearchBar";
+import GamificationPanel from "@/components/GamificationPanel";
+import Leaderboard from "@/components/Leaderboard";
 
 export default async function DashboardPage() {
   const session = await auth();
