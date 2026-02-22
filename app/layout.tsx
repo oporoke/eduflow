@@ -5,6 +5,7 @@ import Providers from "@/app/providers";
 import "@uploadthing/react/styles.css";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 import InstallPrompt from "@/components/InstallPrompt";
+import AccessibilityToolbar from "@/components/AccessibilityToolbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -56,8 +57,10 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
 
         <Providers>
+          <a href="#main-content" className="skip-link">Skip to main content</a>
           <ServiceWorkerRegistration />
           <InstallPrompt />
+          <AccessibilityToolbar />
           {children}
         </Providers>
       </body>

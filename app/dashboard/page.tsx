@@ -68,7 +68,8 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+      <main id="main-content">
+        <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div>
@@ -240,5 +241,6 @@ export default async function DashboardPage() {
         )}
       </div>
     </div>
+      </main>
   );
 }
