@@ -70,6 +70,7 @@ model User {
   timetableSlots        TimetableSlot[]        @relation("SlotTeacher")
   staffProfile          StaffProfile?
   performanceReviews    PerformanceReview[]
+  bookBorrowings        BookBorrowing[]
 }
 
 model StaffProfile {
@@ -734,4 +735,35 @@ model AlertAcknowledgement {
   user      User           @relation(fields: [userId], references: [id])
 
   @@unique([alertId, userId])
+}
+
+model Book {
+  id              String   @id @default(cuid())
+  title           String
+  author          String
+  isbn            String?  @unique
+  category        String
+  description     String?
+  coverUrl        String?
+  totalCopies     Int      @default(1)
+  availableCopies Int      @default(1)
+  location        String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  borrowings BookBorrowing[]
+}
+
+model BookBorrowing {
+  id         String    @id @default(cuid())
+  book       Book      @relation(fields: [bookId], references: [id])
+  bookId     String
+  borrower   User      @relation(fields: [borrowerId], references: [id])
+  borrowerId String
+  borrowedAt DateTime  @default(now())
+  dueDate    DateTime
+  returnedAt DateTime?
+  status     String    @default("BORROWED")
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }

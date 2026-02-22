@@ -122,6 +122,10 @@ export default async function DashboardPage() {
                   <h2 className="text-lg font-semibold">Staff Management</h2>
                   <p className="text-gray-500 text-sm mt-1">Manage teacher profiles, leave and performance reviews</p>
                 </Link>
+                <Link href="/admin/library" className="bg-white rounded shadow p-6 hover:shadow-md transition">
+                  <h2 className="text-lg font-semibold">Library</h2>
+                  <p className="text-gray-500 text-sm mt-1">Manage books, borrowings and returns</p>
+                </Link>
               </div>
             </div>
           )}
@@ -254,6 +258,10 @@ export default async function DashboardPage() {
                   <Link href="/student/portfolio" className="bg-white rounded shadow p-6 hover:shadow-md transition">
                     <h2 className="text-lg font-semibold">My Portfolio</h2>
                     <p className="text-gray-500 text-sm mt-1">Showcase your best work and achievements</p>
+                  </Link>
+                  <Link href="/student/library" className="bg-white rounded shadow p-6 hover:shadow-md transition">
+                    <h2 className="text-lg font-semibold">Library</h2>
+                    <p className="text-gray-500 text-sm mt-1">Browse and borrow books</p>
                   </Link>
                 </div>
                 <Leaderboard />
