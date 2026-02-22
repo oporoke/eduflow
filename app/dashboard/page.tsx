@@ -132,6 +132,12 @@ export default async function DashboardPage() {
                       >
                         Analytics
                       </Link>
+                      <Link
+                        href={`/teacher/iep/${c.id}`}
+                        className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700"
+                      >
+                        IEPs
+                      </Link>
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">

@@ -44,6 +44,11 @@ model User {
   reactions       Reaction[]
   paceVotes       PaceVote[]
   liveQuestions   LiveQuestion[]
+  studentProfile  StudentProfile?
+  studentIEPs     IEP[]            @relation("StudentIEPs")
+  teacherIEPs     IEP[]            @relation("TeacherIEPs")
+  iep             IEP?             @relation(fields: [iEPId], references: [id])
+  iEPId           String?
 }
 
 model Classroom {
@@ -58,6 +63,7 @@ model Classroom {
   enrollments  Enrollment[]
   subjects     Subject[]
   liveSessions LiveSession[]
+  ieps         IEP[]
 }
 
 model Enrollment {
@@ -238,4 +244,46 @@ model LiveQuestion {
   sessionId String
   answered  Boolean     @default(false)
   createdAt DateTime    @default(now())
+}
+
+model StudentProfile {
+  id        String   @id @default(cuid())
+  student   User     @relation(fields: [studentId], references: [id])
+  studentId String   @unique
+  strengths String?
+  concerns  String?
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model IEP {
+  id                 String    @id @default(cuid())
+  student            User      @relation("StudentIEPs", fields: [studentId], references: [id])
+  studentId          String
+  classroom          Classroom @relation(fields: [classroomId], references: [id])
+  classroomId        String
+  teacher            User      @relation("TeacherIEPs", fields: [teacherId], references: [id])
+  teacherId          String
+  strengths          String?
+  areasOfConcern     String?
+  learningGoals      String?
+  interventions      String?
+  reviewDate         DateTime?
+  status             String    @default("DRAFT")
+  parentAcknowledged Boolean   @default(false)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  reviews IEPReview[]
+
+  users User[]
+}
+
+model IEPReview {
+  id        String   @id @default(cuid())
+  iep       IEP      @relation(fields: [iepId], references: [id])
+  iepId     String
+  notes     String?
+  createdAt DateTime @default(now())
 }
