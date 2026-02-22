@@ -17,7 +17,7 @@ export async function checkAndAwardBadges(userId: string) {
     existingBadges,
     allBadges,
   ] = await Promise.all([
-    prisma.lessonProgress.count({ where: { userId, completed: true } }),
+    prisma.lessonProgress.count({ where: { studentId, completed: true } }),
     prisma.quizAttempt.findMany({ where: { studentId: userId } }),
     prisma.enrollment.count({ where: { studentId: userId } }),
     prisma.userPoints.findUnique({ where: { userId } }),
