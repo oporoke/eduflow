@@ -72,6 +72,7 @@ model User {
   performanceReviews    PerformanceReview[]
   bookBorrowings        BookBorrowing[]
   assets                Asset[]
+  bursaryApplications   BursaryApplication[]
 }
 
 model StaffProfile {
@@ -805,4 +806,37 @@ model AssetMaintenance {
   cost        Float?
   date        DateTime
   createdAt   DateTime @default(now())
+}
+
+model BursaryProgram {
+  id           String    @id @default(cuid())
+  name         String
+  description  String?
+  totalFunds   Float
+  usedFunds    Float     @default(0)
+  source       String
+  academicYear String
+  deadline     DateTime?
+  active       Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  applications BursaryApplication[]
+}
+
+model BursaryApplication {
+  id         String         @id @default(cuid())
+  program    BursaryProgram @relation(fields: [programId], references: [id])
+  programId  String
+  student    User           @relation(fields: [studentId], references: [id])
+  studentId  String
+  amount     Float
+  reason     String
+  status     String         @default("PENDING")
+  reviewNote String?
+  approvedBy String?
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  @@unique([programId, studentId])
 }
