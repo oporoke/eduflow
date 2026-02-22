@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
+import { awardPoints, checkAndAwardBadges } from "@/lib/gamification";
 
 export async function GET(req: Request) {
   const session = await auth();
@@ -36,6 +37,13 @@ export async function POST(req: Request) {
     update: { completed },
     create: { studentId: userId, lessonId, completed },
   });
+
+  // Award points and check badges when lesson is completed
+  if (completed) {
+    await awardPoints(userId, 10);
+    const newBadges = await checkAndAwardBadges(userId);
+    return NextResponse.json({ ...progress, newBadges });
+  }
 
   return NextResponse.json(progress);
 }

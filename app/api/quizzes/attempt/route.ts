@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
+import { awardPoints, checkAndAwardBadges } from "@/lib/gamification";
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -31,5 +32,17 @@ export async function POST(req: Request) {
     create: { studentId: userId, quizId, score, total: quiz.questions.length },
   });
 
-  return NextResponse.json({ ...attempt, questions: quiz.questions, answers });
+  // Award points based on score percentage
+  const percentage = Math.round((score / quiz.questions.length) * 100);
+  const pointsEarned = Math.round(percentage / 10) * 5;
+  await awardPoints(userId, pointsEarned);
+  const newBadges = await checkAndAwardBadges(userId);
+
+  return NextResponse.json({
+    ...attempt,
+    questions: quiz.questions,
+    answers,
+    pointsEarned,
+    newBadges,
+  });
 }

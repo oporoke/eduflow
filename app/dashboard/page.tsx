@@ -176,20 +176,28 @@ export default async function DashboardPage() {
         {role === "STUDENT" && (
           <div>
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold">My Classes</h2>
+              <h2 className="text-lg font-semibold">My Learning</h2>
               <Link href="/classes" className="text-sm text-blue-600 hover:underline">
-                View All
+                View All Classes
               </Link>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Link href="/classes" className="bg-white rounded shadow p-6 hover:shadow-md transition">
-                <h2 className="text-lg font-semibold">My Classes</h2>
-                <p className="text-gray-500 text-sm mt-1">Browse your enrolled classes and lessons</p>
-              </Link>
-              <Link href="/student/browse" className="bg-white rounded shadow p-6 hover:shadow-md transition">
-                <h2 className="text-lg font-semibold">Browse Classes</h2>
-                <p className="text-gray-500 text-sm mt-1">Find and enroll in available classes</p>
-              </Link>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="md:col-span-2 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Link href="/classes" className="bg-white rounded shadow p-6 hover:shadow-md transition">
+                    <h2 className="text-lg font-semibold">My Classes</h2>
+                    <p className="text-gray-500 text-sm mt-1">Browse your enrolled classes and lessons</p>
+                  </Link>
+                  <Link href="/student/browse" className="bg-white rounded shadow p-6 hover:shadow-md transition">
+                    <h2 className="text-lg font-semibold">Browse Classes</h2>
+                    <p className="text-gray-500 text-sm mt-1">Find and enroll in available classes</p>
+                  </Link>
+                </div>
+                <Leaderboard />
+              </div>
+              <div>
+                <GamificationPanel />
+              </div>
             </div>
           </div>
         )}
