@@ -74,6 +74,8 @@ model User {
   assets                Asset[]
   bursaryApplications   BursaryApplication[]
   budgets               Budget[]
+  payrollPeriods        PayrollPeriod[]
+  payslips              Payslip[]
 }
 
 model StaffProfile {
@@ -866,4 +868,37 @@ model BudgetItem {
   actual      Float    @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model PayrollPeriod {
+  id          String   @id @default(cuid())
+  month       String
+  year        String
+  status      String   @default("DRAFT")
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  createdById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  payslips Payslip[]
+}
+
+model Payslip {
+  id          String        @id @default(cuid())
+  period      PayrollPeriod @relation(fields: [periodId], references: [id])
+  periodId    String
+  staff       User          @relation(fields: [staffId], references: [id])
+  staffId     String
+  basicSalary Float
+  allowances  Float         @default(0)
+  deductions  Float         @default(0)
+  nhif        Float         @default(0)
+  nssf        Float         @default(0)
+  paye        Float         @default(0)
+  netSalary   Float
+  status      String        @default("PENDING")
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@unique([periodId, staffId])
 }

@@ -138,6 +138,10 @@ export default async function DashboardPage() {
                   <h2 className="text-lg font-semibold">Budget Planning</h2>
                   <p className="text-gray-500 text-sm mt-1">Plan and track school financial budgets</p>
                 </Link>
+                <Link href="/admin/payroll" className="bg-white rounded shadow p-6 hover:shadow-md transition">
+                  <h2 className="text-lg font-semibold">Payroll</h2>
+                  <p className="text-gray-500 text-sm mt-1">Process teacher salaries with Kenya tax calculations</p>
+                </Link>
               </div>
             </div>
           )}
@@ -218,6 +222,10 @@ export default async function DashboardPage() {
                         className="bg-indigo-600 text-white px-3 py-1 rounded text-sm hover:bg-indigo-700"
                       >
                         Timetable
+                      </Link>
+                      <Link href="/teacher/payslips" className="bg-white rounded shadow p-4 hover:shadow-md transition block mt-3">
+                        <h3 className="font-semibold text-sm">My Payslips</h3>
+                        <p className="text-gray-500 text-xs mt-1">View your monthly salary statements</p>
                       </Link>
                     </div>
 
