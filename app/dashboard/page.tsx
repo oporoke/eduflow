@@ -126,6 +126,10 @@ export default async function DashboardPage() {
                   <h2 className="text-lg font-semibold">Library</h2>
                   <p className="text-gray-500 text-sm mt-1">Manage books, borrowings and returns</p>
                 </Link>
+                <Link href="/admin/inventory" className="bg-white rounded shadow p-6 hover:shadow-md transition">
+                  <h2 className="text-lg font-semibold">Inventory & Assets</h2>
+                  <p className="text-gray-500 text-sm mt-1">Track school equipment and resources</p>
+                </Link>
               </div>
             </div>
           )}

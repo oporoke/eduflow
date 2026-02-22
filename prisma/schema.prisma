@@ -71,6 +71,7 @@ model User {
   staffProfile          StaffProfile?
   performanceReviews    PerformanceReview[]
   bookBorrowings        BookBorrowing[]
+  assets                Asset[]
 }
 
 model StaffProfile {
@@ -766,4 +767,42 @@ model BookBorrowing {
   status     String    @default("BORROWED")
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
+}
+
+model AssetCategory {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+
+  assets Asset[]
+}
+
+model Asset {
+  id           String        @id @default(cuid())
+  name         String
+  description  String?
+  serialNumber String?       @unique
+  category     AssetCategory @relation(fields: [categoryId], references: [id])
+  categoryId   String
+  status       String        @default("AVAILABLE")
+  condition    String        @default("GOOD")
+  location     String?
+  purchaseDate DateTime?
+  purchaseCost Float?
+  assignedTo   User?         @relation(fields: [assignedToId], references: [id])
+  assignedToId String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  maintenanceLogs AssetMaintenance[]
+}
+
+model AssetMaintenance {
+  id          String   @id @default(cuid())
+  asset       Asset    @relation(fields: [assetId], references: [id])
+  assetId     String
+  description String
+  cost        Float?
+  date        DateTime
+  createdAt   DateTime @default(now())
 }
