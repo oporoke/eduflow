@@ -64,6 +64,12 @@ export default function ClassesPage() {
                         <span className="w-2 h-2 bg-white rounded-full animate-pulse inline-block"></span>
                         Join Live
                       </button>
+                      <button
+                        onClick={() => router.push(`/student/assignments/${c.id}`)}
+                        className="bg-yellow-600 text-white px-4 py-1 rounded text-sm hover:bg-yellow-700"
+                      >
+                        Assignments
+                      </button>
                     </div>
                   )}
                 </div>

@@ -35,25 +35,29 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  taughtClasses        Classroom[]          @relation("TeacherClasses")
-  enrolledClasses      Enrollment[]
-  lessonProgress       LessonProgress[]
-  quizAttempts         QuizAttempt[]
-  notifications        Notification[]
-  comments             Comment[]
-  reactions            Reaction[]
-  paceVotes            PaceVote[]
-  liveQuestions        LiveQuestion[]
-  studentProfile       StudentProfile?
-  studentIEPs          IEP[]                @relation("StudentIEPs")
-  teacherIEPs          IEP[]                @relation("TeacherIEPs")
-  iep                  IEP?                 @relation(fields: [iEPId], references: [id])
-  iEPId                String?
-  parentChilds         ParentChild[]
-  competencyProgresses CompetencyProgress[]
-  userBadges           UserBadge[]
-  userPoints           UserPoints?
-  portfolio            Portfolio?
+  taughtClasses         Classroom[]            @relation("TeacherClasses")
+  enrolledClasses       Enrollment[]
+  lessonProgress        LessonProgress[]
+  quizAttempts          QuizAttempt[]
+  notifications         Notification[]
+  comments              Comment[]
+  reactions             Reaction[]
+  paceVotes             PaceVote[]
+  liveQuestions         LiveQuestion[]
+  studentProfile        StudentProfile?
+  studentIEPs           IEP[]                  @relation("StudentIEPs")
+  teacherIEPs           IEP[]                  @relation("TeacherIEPs")
+  iep                   IEP?                   @relation(fields: [iEPId], references: [id])
+  iEPId                 String?
+  parentChilds          ParentChild[]
+  competencyProgresses  CompetencyProgress[]
+  userBadges            UserBadge[]
+  userPoints            UserPoints?
+  portfolio             Portfolio?
+  assignments           Assignment[]
+  teacherAssignments    Assignment[]           @relation("TeacherAssignments")
+  studentSubmissions    AssignmentSubmission[] @relation("StudentSubmissions")
+  assignmentSubmissions AssignmentSubmission[]
 }
 
 model Classroom {
@@ -70,6 +74,7 @@ model Classroom {
   liveSessions LiveSession[]
   ieps         IEP[]
   schoolTerms  SchoolTerm[]
+  assignments  Assignment[]
 }
 
 model Enrollment {
@@ -115,8 +120,9 @@ model Subtopic {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  lessons Lesson[]
-  quizzes Quiz[]
+  lessons     Lesson[]
+  quizzes     Quiz[]
+  assignments Assignment[]
 }
 
 model Lesson {
@@ -445,4 +451,43 @@ model WeekPlan {
   completed  Boolean    @default(false)
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
+}
+
+model Assignment {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  dueDate     DateTime?
+  totalMarks  Int       @default(100)
+  classroom   Classroom @relation(fields: [classroomId], references: [id])
+  classroomId String
+  teacher     User      @relation("TeacherAssignments", fields: [teacherId], references: [id])
+  teacherId   String
+  subtopic    Subtopic? @relation(fields: [subtopicId], references: [id])
+  subtopicId  String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  submissions AssignmentSubmission[]
+  user        User?                  @relation(fields: [userId], references: [id])
+  userId      String?
+}
+
+model AssignmentSubmission {
+  id           String     @id @default(cuid())
+  assignment   Assignment @relation(fields: [assignmentId], references: [id])
+  assignmentId String
+  student      User       @relation("StudentSubmissions", fields: [studentId], references: [id])
+  studentId    String
+  content      String?
+  fileUrl      String?
+  marks        Int?
+  feedback     String?
+  status       String     @default("SUBMITTED")
+  submittedAt  DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  user         User?      @relation(fields: [userId], references: [id])
+  userId       String?
+
+  @@unique([assignmentId, studentId])
 }
