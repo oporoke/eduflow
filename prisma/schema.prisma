@@ -68,6 +68,56 @@ model User {
   emergencyAlerts       EmergencyAlert[]
   alertAcknowledgements AlertAcknowledgement[]
   timetableSlots        TimetableSlot[]        @relation("SlotTeacher")
+  staffProfile          StaffProfile?
+  performanceReviews    PerformanceReview[]
+}
+
+model StaffProfile {
+  id               String    @id @default(cuid())
+  user             User      @relation(fields: [userId], references: [id])
+  userId           String    @unique
+  staffNumber      String?   @unique
+  department       String?
+  designation      String?
+  qualification    String?
+  dateJoined       DateTime?
+  dateOfBirth      DateTime?
+  phone            String?
+  address          String?
+  emergencyContact String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  leaveApplications  LeaveApplication[]
+  performanceReviews PerformanceReview[]
+}
+
+model LeaveApplication {
+  id         String       @id @default(cuid())
+  staff      StaffProfile @relation(fields: [staffId], references: [id])
+  staffId    String
+  type       String
+  startDate  DateTime
+  endDate    DateTime
+  reason     String
+  status     String       @default("PENDING")
+  reviewedBy String?
+  reviewNote String?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+}
+
+model PerformanceReview {
+  id         String       @id @default(cuid())
+  staff      StaffProfile @relation(fields: [staffId], references: [id])
+  staffId    String
+  reviewer   User         @relation(fields: [reviewerId], references: [id])
+  reviewerId String
+  period     String
+  rating     Int
+  comments   String?
+  goals      String?
+  createdAt  DateTime     @default(now())
 }
 
 model Timetable {

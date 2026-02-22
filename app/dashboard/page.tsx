@@ -118,6 +118,10 @@ export default async function DashboardPage() {
                   <h2 className="text-lg font-semibold text-red-700">🚨 Emergency Alerts</h2>
                   <p className="text-gray-500 text-sm mt-1">Send urgent notifications to all users</p>
                 </Link>
+                <Link href="/admin/staff" className="bg-white rounded shadow p-6 hover:shadow-md transition">
+                  <h2 className="text-lg font-semibold">Staff Management</h2>
+                  <p className="text-gray-500 text-sm mt-1">Manage teacher profiles, leave and performance reviews</p>
+                </Link>
               </div>
             </div>
           )}
@@ -143,6 +147,10 @@ export default async function DashboardPage() {
                         <h3 className="font-semibold text-lg">{c.name}</h3>
                         {c.description && <p className="text-gray-500 text-sm">{c.description}</p>}
                       </div>
+                      <Link href="/teacher/leave" className="bg-white rounded shadow p-4 hover:shadow-md transition block mt-3">
+                        <h3 className="font-semibold text-sm">Leave Applications</h3>
+                        <p className="text-gray-500 text-xs mt-1">Apply for and track your leave requests</p>
+                      </Link>
                       <Link
                         href={`/teacher/curriculum/${c.id}`}
                         className="bg-purple-600 text-white px-3 py-1 rounded text-sm hover:bg-purple-700"
