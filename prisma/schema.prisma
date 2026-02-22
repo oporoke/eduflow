@@ -67,6 +67,34 @@ model User {
   studentMeetings       PTMeeting[]            @relation("StudentMeetings")
   emergencyAlerts       EmergencyAlert[]
   alertAcknowledgements AlertAcknowledgement[]
+  timetableSlots        TimetableSlot[]        @relation("SlotTeacher")
+}
+
+model Timetable {
+  id          String    @id @default(cuid())
+  classroom   Classroom @relation(fields: [classroomId], references: [id])
+  classroomId String    @unique
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  slots TimetableSlot[]
+}
+
+model TimetableSlot {
+  id          String    @id @default(cuid())
+  timetable   Timetable @relation(fields: [timetableId], references: [id])
+  timetableId String
+  day         String
+  startTime   String
+  endTime     String
+  subject     Subject   @relation(fields: [subjectId], references: [id])
+  subjectId   String
+  teacher     User      @relation("SlotTeacher", fields: [teacherId], references: [id])
+  teacherId   String
+  room        String?
+  createdAt   DateTime  @default(now())
+
+  @@unique([timetableId, day, startTime])
 }
 
 model Classroom {
@@ -86,6 +114,7 @@ model Classroom {
   assignments        Assignment[]
   rubrics            Rubric[]
   lessonObservations LessonObservation[]
+  timetable          Timetable?
 }
 
 model Enrollment {
@@ -107,8 +136,9 @@ model Subject {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  topics    Topic[]
-  weekPlans WeekPlan[]
+  topics         Topic[]
+  weekPlans      WeekPlan[]
+  timetableSlots TimetableSlot[]
 }
 
 model Topic {

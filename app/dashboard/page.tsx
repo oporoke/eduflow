@@ -189,6 +189,12 @@ export default async function DashboardPage() {
                         <h3 className="font-semibold text-sm">My Observations</h3>
                         <p className="text-gray-500 text-xs mt-1">View feedback from lesson observations</p>
                       </Link>
+                      <Link
+                        href={`/teacher/timetable/${c.id}`}
+                        className="bg-indigo-600 text-white px-3 py-1 rounded text-sm hover:bg-indigo-700"
+                      >
+                        Timetable
+                      </Link>
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
