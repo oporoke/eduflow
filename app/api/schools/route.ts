@@ -53,13 +53,13 @@ export async function GET(req: Request) {
         .map((u) => u.userId);
 
       const quizAttempts = await prisma.quizAttempt.findMany({
-        where: { userId: { in: studentIds } },
-        select: { score: true, maxScore: true },
+        where: { studentId: { in: studentIds } },
+        select: { score: true, total: true },
       });
 
       const avgScore = quizAttempts.length
         ? Math.round(
-            quizAttempts.reduce((acc, a) => acc + (a.score / a.maxScore) * 100, 0) /
+            quizAttempts.reduce((acc, a) => acc + (a.score / a.total) * 100, 0) /
               quizAttempts.length
           )
         : 0;

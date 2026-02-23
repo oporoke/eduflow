@@ -2,6 +2,19 @@ import { prisma } from "@/lib/prisma";
 import { formatUSSDResponse, parseUSSDInput, sendSMS } from "@/lib/africastalking";
 import { NextResponse } from "next/server";
 
+function getQuestionOptions(question: {
+  optionA: string;
+  optionB: string;
+  optionC: string;
+  optionD: string;
+}) {
+  return [
+    question.optionA,
+    question.optionB,
+    question.optionC,
+    question.optionD,
+  ];
+}
 export async function POST(req: Request) {
   const formData = await req.formData();
   const sessionId = formData.get("sessionId") as string;
@@ -15,7 +28,7 @@ export async function POST(req: Request) {
   const student = await prisma.user.findFirst({
     where: { phone: phoneNumber.replace("+254", "0") },
     include: {
-      classrooms: {
+      enrolledClasses: {
         include: {
           classroom: {
             include: {
@@ -39,7 +52,7 @@ export async function POST(req: Request) {
       },
       quizAttempts: { orderBy: { createdAt: "desc" }, take: 5 },
       lessonProgress: { where: { completed: true } },
-      gamification: true,
+      userPoints: true,
     },
   });
 
@@ -75,7 +88,7 @@ export async function POST(req: Request) {
         });
       }
 
-      const classroom = student.classrooms?.[0]?.classroom;
+      const classroom = student.enrolledClasses?.[0]?.classroom;
       const subjects = classroom?.subjects || [];
 
       if (subjects.length === 0) {
@@ -98,7 +111,7 @@ export async function POST(req: Request) {
 
     if (choice === "2") {
       // Take Quiz
-      const classroom = student?.classrooms?.[0]?.classroom;
+      const classroom = student?.enrolledClasses?.[0]?.classroom;
       const subjects = classroom?.subjects || [];
 
       if (subjects.length === 0) {
@@ -130,14 +143,14 @@ export async function POST(req: Request) {
       const attempts = student.quizAttempts;
       const avgScore = attempts.length
         ? Math.round(
-            attempts.reduce((acc, a) => acc + (a.score / a.maxScore) * 100, 0) /
+            attempts.reduce((acc, a) => acc + (a.score / a.total) * 100, 0) /
               attempts.length
           )
         : 0;
 
       const completedLessons = student.lessonProgress.length;
-      const streak = student.gamification?.streak || 0;
-      const points = student.gamification?.points || 0;
+      const streak = student.userPoints?.streak || 0;
+      const points = student.userPoints?.points || 0;
 
       return new Response(
         formatUSSDResponse(
@@ -150,7 +163,7 @@ export async function POST(req: Request) {
 
     if (choice === "4") {
       // Contact Teacher
-      const classroom = student?.classrooms?.[0]?.classroom;
+      const classroom = student?.enrolledClasses?.[0]?.classroom;
       if (!classroom) {
         return new Response(
           formatUSSDResponse("No class found.", true),
@@ -159,7 +172,7 @@ export async function POST(req: Request) {
       }
 
       const teacher = await prisma.user.findFirst({
-        where: { teachingClassrooms: { some: { id: classroom.id } } },
+        where: { taughtClasses: { some: { id: classroom.id } } },
       });
 
       if (teacher?.phone) {
@@ -189,7 +202,7 @@ export async function POST(req: Request) {
     const mainChoice = inputs[0];
     const subjectIndex = parseInt(inputs[1]) - 1;
 
-    const classroom = student?.classrooms?.[0]?.classroom;
+    const classroom = student?.enrolledClasses?.[0]?.classroom;
     const subjects = classroom?.subjects || [];
     const subject = subjects[subjectIndex];
 
@@ -242,7 +255,7 @@ export async function POST(req: Request) {
     const subjectIndex = parseInt(inputs[1]) - 1;
     const topicIndex = parseInt(inputs[2]) - 1;
 
-    const classroom = student?.classrooms?.[0]?.classroom;
+    const classroom = student?.enrolledClasses?.[0]?.classroom;
     const subjects = classroom?.subjects || [];
     const subject = subjects[subjectIndex];
     const topic = subject?.topics?.[topicIndex];
@@ -298,7 +311,7 @@ export async function POST(req: Request) {
     const subjectIndex = parseInt(inputs[1]) - 1;
     const quizIndex = parseInt(inputs[2]) - 1;
 
-    const classroom = student?.classrooms?.[0]?.classroom;
+    const classroom = student?.enrolledClasses?.[0]?.classroom;
     const subjects = classroom?.subjects || [];
     const subject = subjects[subjectIndex];
     const subtopics = subject?.topics.flatMap((t) => t.subtopics) || [];
@@ -327,7 +340,8 @@ export async function POST(req: Request) {
       );
     }
 
-    const options = question.options as string[];
+    // const options = question.options as string[];
+    const options = getQuestionOptions(question);
     const optionList = options.map((o, i) => `${i + 1}. ${o}`).join("\n");
 
     return new Response(
@@ -342,7 +356,7 @@ export async function POST(req: Request) {
     const quizIndex = parseInt(inputs[2]) - 1;
     const answerIndex = parseInt(inputs[3]) - 1;
 
-    const classroom = student?.classrooms?.[0]?.classroom;
+    const classroom = student?.enrolledClasses?.[0]?.classroom;
     const subjects = classroom?.subjects || [];
     const subject = subjects[subjectIndex];
     const subtopics = subject?.topics.flatMap((t) => t.subtopics) || [];
@@ -363,17 +377,18 @@ export async function POST(req: Request) {
     });
 
     const question = questions[0];
-    const options = question?.options as string[];
+    const options = getQuestionOptions(question);
+    // const options = question?.options as string[];
     const selectedAnswer = options?.[answerIndex];
     const isCorrect = selectedAnswer === question?.correctAnswer;
 
     // Record attempt
     await prisma.quizAttempt.create({
       data: {
-        userId: student.id,
+        studentId: student.id,
         quizId: quiz.id,
         score: isCorrect ? 1 : 0,
-        maxScore: 1,
+        total: 1,
         answers: { ussd: true, answer: selectedAnswer },
       },
     });

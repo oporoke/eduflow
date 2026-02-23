@@ -305,6 +305,7 @@ model QuizAttempt {
   score     Int
   total     Int
   createdAt DateTime @default(now())
+  answers   Json?
 
   @@unique([studentId, quizId])
   @@index([quizId])

@@ -87,18 +87,18 @@ export async function GET() {
   // Build lookup maps
   const attemptsByUser = new Map<string, { score: number; total: number }[]>();
   for (const attempt of allAttempts) {
-    if (!attemptsByUser.has(attempt.userId)) attemptsByUser.set(attempt.userId, []);
-    attemptsByUser.get(attempt.userId)!.push(attempt);
+    if (!attemptsByUser.has(attempt.studentId)) attemptsByUser.set(attempt.studentId, []);
+    attemptsByUser.get(attempt.studentId)!.push(attempt);
   }
 
   const progressByUser = new Map<string, Set<string>>();
   for (const progress of allLessonProgress) {
-    if (!progressByUser.has(progress.userId)) progressByUser.set(progress.userId, new Set());
-    progressByUser.get(progress.userId)!.add(progress.lessonId);
+    if (!progressByUser.has(progress.studentId)) progressByUser.set(progress.studentId, new Set());
+    progressByUser.get(progress.studentId)!.add(progress.lessonId);
   }
 
   const classPerformance = classrooms.map((classroom) => {
-    const studentIds = classroom.enrollments.map((e) => e.userId);
+    const studentIds = classroom.enrollments.map((e) => e.studentId);
     const classAttempts = studentIds.flatMap((id) => attemptsByUser.get(id) || []);
 
     const avgScore = classAttempts.length
@@ -147,7 +147,7 @@ export async function GET() {
       id: true,
       name: true,
       email: true,
-      teachingClassrooms: {
+      taughtClasses: {
         select: { id: true },
       },
     },
@@ -189,7 +189,7 @@ export async function GET() {
   }
 
   const teacherActivity = teachers.map((teacher) => {
-    const recentLessons = teacher.teachingClassrooms.reduce(
+    const recentLessons = teacher.taughtClasses.reduce(
       (acc, c) => acc + (classroomLessonCount.get(c.id) || 0),
       0
     );
@@ -198,7 +198,7 @@ export async function GET() {
       name: teacher.name,
       email: teacher.email,
       recentLessons,
-      classCount: teacher.teachingClassrooms.length,
+      classCount: teacher.taughtClasses.length,
       active: recentLessons > 0,
     };
   });

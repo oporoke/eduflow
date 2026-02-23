@@ -11,7 +11,6 @@ export const translations: Record<Language, Record<string, string>> = {
     logout: "Logout",
     settings: "Settings",
     notifications: "Notifications",
-    search: "Search",
 
     // Dashboard
     welcome: "Welcome back",
@@ -124,7 +123,6 @@ export const translations: Record<Language, Record<string, string>> = {
     logout: "Ondoka",
     settings: "Mipangilio",
     notifications: "Arifa",
-    search: "Tafuta",
 
     // Dashboard
     welcome: "Karibu tena",
