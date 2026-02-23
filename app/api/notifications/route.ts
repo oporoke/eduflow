@@ -2,19 +2,39 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(req: Request) {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const userId = (session.user as any).id;
+  const { searchParams } = new URL(req.url);
+  const page = parseInt(searchParams.get("page") || "1");
+  const limit = parseInt(searchParams.get("limit") || "20");
+  const skip = (page - 1) * limit;
 
-  const notifications = await prisma.notification.findMany({
-    where: { userId },
-    orderBy: { createdAt: "desc" },
-    take: 20,
+  const [notifications, total] = await Promise.all([
+    prisma.notification.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      take: limit,
+      skip,
+      select: {
+        id: true,
+        message: true,
+        read: true,
+        createdAt: true,
+      },
+    }),
+    prisma.notification.count({ where: { userId } }),
+  ]);
+
+  return NextResponse.json({
+    notifications,
+    total,
+    page,
+    pages: Math.ceil(total / limit),
+    hasMore: skip + limit < total,
   });
-
-  return NextResponse.json(notifications);
 }
 
 export async function PUT(req: Request) {

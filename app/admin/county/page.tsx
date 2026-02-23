@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import SkeletonLoader from "@/components/SkeletonLoader";
 
 const SCHOOL_TYPES = ["PRIMARY", "SECONDARY", "MIXED"];
 const KENYA_COUNTIES = [
@@ -342,10 +343,8 @@ export default function CountyDashboard() {
           <div className="grid grid-cols-3 gap-6">
             <div className="col-span-1 space-y-3 max-h-screen overflow-y-auto">
               {loading ? (
-                <div className="bg-white rounded shadow p-6 text-center text-gray-400">
-                  <p className="animate-pulse">Loading schools...</p>
-                </div>
-              ) : schools.length === 0 ? (
+                  <SkeletonLoader type="list" rows={6} />
+                )  : schools.length === 0 ? (
                 <div className="bg-white rounded shadow p-6 text-center text-gray-400">
                   <p className="text-3xl mb-2">🏫</p>
                   <p className="text-sm">No schools registered yet</p>

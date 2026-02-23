@@ -11,27 +11,25 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const classroomId = searchParams.get("classroomId");
 
-  const announcements = await prisma.announcement.findMany({
-    where: {
-      OR: [
-        { audience: "ALL" },
-        { audience: role },
-        ...(classroomId ? [{ classroomId }] : []),
-      ],
-    },
-    include: {
-      author: { select: { name: true, role: true } },
-      reads: { where: { userId } },
-    },
-    orderBy: [{ pinned: "desc" }, { createdAt: "desc" }],
-  });
+  const page = parseInt(searchParams.get("page") || "1");
+  const limit = parseInt(searchParams.get("limit") || "10");
+  const skip = (page - 1) * limit;
 
-  return NextResponse.json(
-    announcements.map((a) => ({
-      ...a,
-      isRead: a.reads.length > 0,
-    }))
-  );
+  const [announcements, total] = await Promise.all([
+    prisma.announcement.findMany({
+      where: { /* existing where clause */ },
+      orderBy: [{ pinned: "desc" }, { createdAt: "desc" }],
+      take: limit,
+      skip,
+      include: {
+        author: { select: { id: true, name: true } },
+        reads: { where: { userId }, select: { id: true } },
+      },
+    }),
+    prisma.announcement.count({ where: { /* existing where clause */ } }),
+  ]);
+
+  return NextResponse.json({ announcements, total, page, hasMore: skip + limit < total });
 }
 
 export async function POST(req: Request) {

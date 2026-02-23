@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
+import { getCached, setCached, CACHE_TTL } from "@/lib/cache";
 
 export async function GET() {
   const session = await auth();
@@ -11,7 +12,11 @@ export async function GET() {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  // Core counts
+  const cacheKey = "principal-dashboard";
+  const cached = getCached(cacheKey);
+  if (cached) return NextResponse.json(cached);
+
+  // Core counts in parallel
   const [
     totalStudents,
     totalTeachers,
@@ -28,100 +33,33 @@ export async function GET() {
     prisma.assignment.count(),
   ]);
 
-  // Quiz performance school-wide
+  // Quiz performance — select only needed fields
   const quizAttempts = await prisma.quizAttempt.findMany({
-    select: { score: true, total: true },
+    select: { score: true, maxScore: true },
   });
+
   const schoolAvgScore = quizAttempts.length
     ? Math.round(
-        quizAttempts.reduce((acc, a) => acc + (a.score / a.total) * 100, 0) /
+        quizAttempts.reduce((acc, a) => acc + (a.score / a.maxScore) * 100, 0) /
           quizAttempts.length
       )
     : 0;
 
-  // Class-by-class performance
+  // Class performance — lean query
   const classrooms = await prisma.classroom.findMany({
-    include: {
+    select: {
+      id: true,
+      name: true,
       teacher: { select: { id: true, name: true } },
-      enrollments: {
-        include: {
-          student: {
-            include: {
-              quizAttempts: { select: { score: true, total: true } },
-              lessonProgress: { where: { completed: true }, select: { lessonId: true } },
-            },
-          },
-        },
-      },
+      enrollments: { select: { userId: true } },
+      assignments: { select: { id: true } },
       subjects: {
-        include: {
+        select: {
           topics: {
-            include: {
+            select: {
               subtopics: {
-                include: { lessons: true },
-              },
-            },
-          },
-        },
-      },
-      assignments: true,
-    },
-  });
-
-  const classPerformance = classrooms.map((classroom) => {
-    const students = classroom.enrollments.map((e) => e.student);
-    const allAttempts = students.flatMap((s) => s.quizAttempts);
-    const avgScore = allAttempts.length
-      ? Math.round(
-          allAttempts.reduce((acc, a) => acc + (a.score / a.total) * 100, 0) /
-            allAttempts.length
-        )
-      : 0;
-
-    // Curriculum coverage
-    const totalSubtopics = classroom.subjects.flatMap((s) =>
-      s.topics.flatMap((t) => t.subtopics)
-    ).length;
-    const totalLessonsInClass = classroom.subjects.flatMap((s) =>
-      s.topics.flatMap((t) => t.subtopics.flatMap((st) => st.lessons))
-    ).length;
-    const completedLessons = students.flatMap((s) => s.lessonProgress).length;
-    const coverageRate = totalLessonsInClass > 0
-      ? Math.round((completedLessons / (totalLessonsInClass * Math.max(students.length, 1))) * 100)
-      : 0;
-
-    return {
-      id: classroom.id,
-      name: classroom.name,
-      teacher: classroom.teacher,
-      studentCount: students.length,
-      avgScore,
-      coverageRate: Math.min(coverageRate, 100),
-      totalAssignments: classroom.assignments.length,
-      totalSubtopics,
-    };
-  });
-
-  // Teacher activity (lessons created in last 30 days)
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-  const teachers = await prisma.user.findMany({
-    where: { role: "TEACHER" },
-    include: {
-      taughtClasses: {
-        include: {
-          subjects: {
-            include: {
-              topics: {
-                include: {
-                  subtopics: {
-                    include: {
-                      lessons: {
-                        where: { createdAt: { gte: thirtyDaysAgo } },
-                      },
-                    },
-                  },
+                select: {
+                  lessons: { select: { id: true } },
                 },
               },
             },
@@ -131,78 +69,201 @@ export async function GET() {
     },
   });
 
-  const teacherActivity = teachers.map((teacher) => {
-    const recentLessons = teacher.taughtClasses.flatMap((c) =>
-      c.subjects.flatMap((s) =>
-        s.topics.flatMap((t) =>
-          t.subtopics.flatMap((st) => st.lessons)
+  // Get quiz attempts per student in bulk
+  const allStudentIds = classrooms.flatMap((c) => c.enrollments.map((e) => e.userId));
+  const uniqueStudentIds = [...new Set(allStudentIds)];
+
+  const [allAttempts, allLessonProgress] = await Promise.all([
+    prisma.quizAttempt.findMany({
+      where: { userId: { in: uniqueStudentIds } },
+      select: { userId: true, score: true, maxScore: true },
+    }),
+    prisma.lessonProgress.findMany({
+      where: { userId: { in: uniqueStudentIds }, completed: true },
+      select: { userId: true, lessonId: true },
+    }),
+  ]);
+
+  // Build lookup maps
+  const attemptsByUser = new Map<string, { score: number; maxScore: number }[]>();
+  for (const attempt of allAttempts) {
+    if (!attemptsByUser.has(attempt.userId)) attemptsByUser.set(attempt.userId, []);
+    attemptsByUser.get(attempt.userId)!.push(attempt);
+  }
+
+  const progressByUser = new Map<string, Set<string>>();
+  for (const progress of allLessonProgress) {
+    if (!progressByUser.has(progress.userId)) progressByUser.set(progress.userId, new Set());
+    progressByUser.get(progress.userId)!.add(progress.lessonId);
+  }
+
+  const classPerformance = classrooms.map((classroom) => {
+    const studentIds = classroom.enrollments.map((e) => e.userId);
+    const classAttempts = studentIds.flatMap((id) => attemptsByUser.get(id) || []);
+
+    const avgScore = classAttempts.length
+      ? Math.round(
+          classAttempts.reduce((acc, a) => acc + (a.score / a.maxScore) * 100, 0) /
+            classAttempts.length
         )
-      )
-    ).length;
+      : 0;
+
+    const totalLessonsInClass = classroom.subjects
+      .flatMap((s) => s.topics.flatMap((t) => t.subtopics.flatMap((st) => st.lessons)))
+      .length;
+
+    const completedLessons = studentIds.reduce((acc, id) => {
+      return acc + (progressByUser.get(id)?.size || 0);
+    }, 0);
+
+    const coverageRate = totalLessonsInClass > 0 && studentIds.length > 0
+      ? Math.min(
+          Math.round((completedLessons / (totalLessonsInClass * studentIds.length)) * 100),
+          100
+        )
+      : 0;
 
     return {
-      id: teacher.id,
-      name: teacher.name,
-      email: teacher.email,
-      recentLessons,
-      classCount: teacher.taughtClasses.length,
-      active: recentLessons > 0,
+      id: classroom.id,
+      name: classroom.name,
+      teacher: classroom.teacher,
+      studentCount: studentIds.length,
+      avgScore,
+      coverageRate,
+      totalAssignments: classroom.assignments.length,
+      totalSubtopics: classroom.subjects
+        .flatMap((s) => s.topics.flatMap((t) => t.subtopics))
+        .length,
     };
   });
 
-  // Recent activity
-  const recentLessons = await prisma.lesson.findMany({
-    take: 5,
-    orderBy: { createdAt: "desc" },
-    include: {
-      subtopic: {
-        include: {
-          topic: {
-            include: {
-              subject: {
-                include: { classroom: { include: { teacher: { select: { name: true } } } } },
-              },
-            },
+  // Teacher activity — lean query
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+  const teachers = await prisma.user.findMany({
+    where: { role: "TEACHER" },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      teachingClassrooms: {
+        select: { id: true },
+      },
+    },
+  });
+
+  const recentLessonCounts = await prisma.lesson.groupBy({
+    by: ["subtopicId"],
+    where: { createdAt: { gte: thirtyDaysAgo } },
+    _count: { id: true },
+  });
+
+  // Get subtopic → classroom mapping for teacher activity
+  const subtopics = await prisma.subtopic.findMany({
+    select: {
+      id: true,
+      topic: {
+        select: {
+          subject: {
+            select: { classroomId: true },
           },
         },
       },
     },
   });
 
-  const recentSubmissions = await prisma.assignmentSubmission.findMany({
-    take: 5,
-    orderBy: { createdAt: "desc" },
-    include: {
-      student: { select: { name: true } },
-      assignment: { select: { title: true } },
-    },
+  const subtopicToClassroom = new Map(
+    subtopics.map((s) => [s.id, s.topic.subject.classroomId])
+  );
+
+  const classroomLessonCount = new Map<string, number>();
+  for (const group of recentLessonCounts) {
+    const classroomId = subtopicToClassroom.get(group.subtopicId);
+    if (classroomId) {
+      classroomLessonCount.set(
+        classroomId,
+        (classroomLessonCount.get(classroomId) || 0) + group._count.id
+      );
+    }
+  }
+
+  const teacherActivity = teachers.map((teacher) => {
+    const recentLessons = teacher.teachingClassrooms.reduce(
+      (acc, c) => acc + (classroomLessonCount.get(c.id) || 0),
+      0
+    );
+    return {
+      id: teacher.id,
+      name: teacher.name,
+      email: teacher.email,
+      recentLessons,
+      classCount: teacher.teachingClassrooms.length,
+      active: recentLessons > 0,
+    };
   });
 
-  const recentAnnouncements = await prisma.announcement.findMany({
-    take: 3,
-    orderBy: { createdAt: "desc" },
-    include: { author: { select: { name: true } } },
-  });
+  // Recent activity — parallel lean queries
+  const [recentLessons, recentSubmissions, recentAnnouncements] = await Promise.all([
+    prisma.lesson.findMany({
+      take: 5,
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        title: true,
+        createdAt: true,
+        subtopic: {
+          select: {
+            topic: {
+              select: {
+                subject: {
+                  select: {
+                    classroom: {
+                      select: {
+                        name: true,
+                        teacher: { select: { name: true } },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    }),
+    prisma.assignmentSubmission.findMany({
+      take: 5,
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        createdAt: true,
+        student: { select: { name: true } },
+        assignment: { select: { title: true } },
+      },
+    }),
+    prisma.announcement.findMany({
+      take: 3,
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        title: true,
+        createdAt: true,
+        author: { select: { name: true } },
+      },
+    }),
+  ]);
 
-  // At-risk count (simplified)
-  const allStudents = await prisma.user.findMany({
-    where: { role: "STUDENT" },
-    include: {
-      quizAttempts: { select: { score: true, total: true } },
-      userPoints: { select: { streak: true } },
-    },
-  });
-
-  const atRiskCount = allStudents.filter((student) => {
-    const attempts = student.quizAttempts;
+  // At-risk count
+  const atRiskCount = uniqueStudentIds.filter((studentId) => {
+    const attempts = attemptsByUser.get(studentId) || [];
     const avgScore = attempts.length
-      ? attempts.reduce((acc, a) => acc + (a.score / a.total) * 100, 0) / attempts.length
+      ? attempts.reduce((acc, a) => acc + (a.score / a.maxScore) * 100, 0) / attempts.length
       : 100;
-    const streak = student.userPoints?.streak || 0;
-    return avgScore < 50 || streak === 0;
+    return avgScore < 50;
   }).length;
 
-  return NextResponse.json({
+  const result = {
     overview: {
       totalStudents,
       totalTeachers,
@@ -236,5 +297,9 @@ export async function GET() {
         createdAt: a.createdAt,
       })),
     },
-  });
+  };
+
+  setCached(cacheKey, result, CACHE_TTL.SHORT);
+
+  return NextResponse.json(result);
 }

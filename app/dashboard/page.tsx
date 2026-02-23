@@ -108,6 +108,10 @@ export default async function DashboardPage() {
                   <h2 className="text-lg font-semibold">🏫 Principal Dashboard</h2>
                   <p className="text-blue-100 text-sm mt-1">School-wide performance overview — classes, teachers, at-risk students</p>
                 </Link>
+                <Link href="/admin/ussd" className="bg-white rounded shadow p-6 hover:shadow-md transition">
+                  <h2 className="text-lg font-semibold">📟 USSD & SMS</h2>
+                  <p className="text-gray-500 text-sm mt-1">Configure phone numbers and test SMS fallback</p>
+                </Link>
                 <Link
                   href="/admin/county"
                   className="bg-blue-600 text-white rounded shadow p-6 hover:bg-blue-700 transition"

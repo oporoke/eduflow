@@ -34,12 +34,23 @@ export default function PrincipalDashboard() {
     return "bg-red-500";
   };
 
+  import SkeletonLoader, { SkeletonStats } from "@/components/SkeletonLoader";
+
+  // Replace the loading return with:
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center text-gray-400">
-          <p className="text-4xl mb-3 animate-pulse">🏫</p>
-          <p>Loading school dashboard...</p>
+      <div className="min-h-screen bg-gray-50 p-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="h-8 bg-gray-200 rounded w-64 mb-2 animate-pulse" />
+          <div className="h-4 bg-gray-100 rounded w-96 mb-8 animate-pulse" />
+          <SkeletonStats count={4} />
+          <div className="mt-4">
+            <SkeletonStats count={4} />
+          </div>
+          <div className="mt-6 grid grid-cols-2 gap-6">
+            <SkeletonLoader type="card" count={3} />
+            <SkeletonLoader type="list" rows={4} />
+          </div>
         </div>
       </div>
     );

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import SkeletonLoader from "@/components/SkeletonLoader";
 
 const LEVEL_COLORS: { [key: string]: string } = {
   HIGH: "bg-red-100 text-red-700 border-red-300",
@@ -146,11 +147,15 @@ export default function EarlyWarningPage() {
         </div>
 
         {loading ? (
-          <div className="bg-white rounded shadow p-8 text-center text-gray-400">
-            <p className="text-4xl mb-3 animate-pulse">⏳</p>
-            <p>Analyzing student data...</p>
-          </div>
-        ) : (
+            <div className="grid grid-cols-3 gap-6">
+              <div className="col-span-1">
+                <SkeletonLoader type="list" rows={5} />
+              </div>
+              <div className="col-span-2">
+                <SkeletonLoader type="card" count={1} />
+              </div>
+            </div>
+          ) : (
           <div className="grid grid-cols-3 gap-6">
             {/* Student List */}
             <div className="col-span-1 space-y-3 max-h-screen overflow-y-auto">
