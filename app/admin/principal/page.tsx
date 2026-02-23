@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import SkeletonLoader, { SkeletonStats } from "@/components/SkeletonLoader";
 
 export default function PrincipalDashboard() {
   const router = useRouter();
@@ -34,7 +35,7 @@ export default function PrincipalDashboard() {
     return "bg-red-500";
   };
 
-  import SkeletonLoader, { SkeletonStats } from "@/components/SkeletonLoader";
+
 
   // Replace the loading return with:
   if (loading) {
