@@ -81,6 +81,7 @@ model User {
   studyGroupMembers     StudyGroupMember[]
   studyGroupPosts       StudyGroupPost[]
   studyGroupReplies     StudyGroupReply[]
+  feePayments           FeePayment[]
 }
 
 model StaffProfile {
@@ -178,6 +179,7 @@ model Classroom {
   timetable          Timetable?
   learningPaths      LearningPath[]
   studyGroups        StudyGroup[]
+  feeStructures      FeeStructure[]
 }
 
 model Enrollment {
@@ -598,6 +600,7 @@ model AssignmentSubmission {
   user         User?         @relation(fields: [userId], references: [id])
   userId       String?
   rubricScores RubricScore[]
+  createdAt    DateTime      @default(now())
 
   @@unique([assignmentId, studentId])
 }
@@ -1019,4 +1022,44 @@ model StudyGroupUpvote {
   createdAt DateTime       @default(now())
 
   @@unique([postId, userId])
+}
+
+model FeeStructure {
+  id           String    @id @default(cuid())
+  classroom    Classroom @relation(fields: [classroomId], references: [id])
+  classroomId  String
+  term         String
+  academicYear String
+  totalAmount  Float
+  description  String?
+  dueDate      DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  feeItems    FeeItem[]
+  feePayments FeePayment[]
+}
+
+model FeeItem {
+  id             String       @id @default(cuid())
+  feeStructure   FeeStructure @relation(fields: [feeStructureId], references: [id])
+  feeStructureId String
+  name           String
+  amount         Float
+  createdAt      DateTime     @default(now())
+}
+
+model FeePayment {
+  id             String       @id @default(cuid())
+  feeStructure   FeeStructure @relation(fields: [feeStructureId], references: [id])
+  feeStructureId String
+  student        User         @relation(fields: [studentId], references: [id])
+  studentId      String
+  amount         Float
+  phone          String
+  mpesaCode      String?
+  status         String       @default("PENDING")
+  checkoutId     String?      @unique
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 }

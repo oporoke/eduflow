@@ -233,7 +233,7 @@ export default function LessonPage({ params }: { params: Promise<{ subtopicId: s
                 <AudioRecorder
                   lessonId={lesson.id}
                   existingAudio={lesson.audioLesson}
-                  onSaved={() => fetchLesson()}
+                  onSaved={() => fetchLessons()}
                 />
               </div>
             ))

@@ -30,11 +30,11 @@ export async function GET() {
 
   // Quiz performance school-wide
   const quizAttempts = await prisma.quizAttempt.findMany({
-    select: { score: true, maxScore: true },
+    select: { score: true, total: true },
   });
   const schoolAvgScore = quizAttempts.length
     ? Math.round(
-        quizAttempts.reduce((acc, a) => acc + (a.score / a.maxScore) * 100, 0) /
+        quizAttempts.reduce((acc, a) => acc + (a.score / a.total) * 100, 0) /
           quizAttempts.length
       )
     : 0;
@@ -45,9 +45,9 @@ export async function GET() {
       teacher: { select: { id: true, name: true } },
       enrollments: {
         include: {
-          user: {
+          student: {
             include: {
-              quizAttempts: { select: { score: true, maxScore: true } },
+              quizAttempts: { select: { score: true, total: true } },
               lessonProgress: { where: { completed: true }, select: { lessonId: true } },
             },
           },
@@ -69,11 +69,11 @@ export async function GET() {
   });
 
   const classPerformance = classrooms.map((classroom) => {
-    const students = classroom.enrollments.map((e) => e.user);
+    const students = classroom.enrollments.map((e) => e.student);
     const allAttempts = students.flatMap((s) => s.quizAttempts);
     const avgScore = allAttempts.length
       ? Math.round(
-          allAttempts.reduce((acc, a) => acc + (a.score / a.maxScore) * 100, 0) /
+          allAttempts.reduce((acc, a) => acc + (a.score / a.total) * 100, 0) /
             allAttempts.length
         )
       : 0;
@@ -109,7 +109,7 @@ export async function GET() {
   const teachers = await prisma.user.findMany({
     where: { role: "TEACHER" },
     include: {
-      teachingClassrooms: {
+      taughtClasses: {
         include: {
           subjects: {
             include: {
@@ -132,7 +132,7 @@ export async function GET() {
   });
 
   const teacherActivity = teachers.map((teacher) => {
-    const recentLessons = teacher.teachingClassrooms.flatMap((c) =>
+    const recentLessons = teacher.taughtClasses.flatMap((c) =>
       c.subjects.flatMap((s) =>
         s.topics.flatMap((t) =>
           t.subtopics.flatMap((st) => st.lessons)
@@ -145,7 +145,7 @@ export async function GET() {
       name: teacher.name,
       email: teacher.email,
       recentLessons,
-      classCount: teacher.teachingClassrooms.length,
+      classCount: teacher.taughtClasses.length,
       active: recentLessons > 0,
     };
   });
@@ -188,17 +188,17 @@ export async function GET() {
   const allStudents = await prisma.user.findMany({
     where: { role: "STUDENT" },
     include: {
-      quizAttempts: { select: { score: true, maxScore: true } },
-      gamification: { select: { streak: true } },
+      quizAttempts: { select: { score: true, total: true } },
+      userPoints: { select: { streak: true } },
     },
   });
 
   const atRiskCount = allStudents.filter((student) => {
     const attempts = student.quizAttempts;
     const avgScore = attempts.length
-      ? attempts.reduce((acc, a) => acc + (a.score / a.maxScore) * 100, 0) / attempts.length
+      ? attempts.reduce((acc, a) => acc + (a.score / a.total) * 100, 0) / attempts.length
       : 100;
-    const streak = student.gamification?.streak || 0;
+    const streak = student.userPoints?.streak || 0;
     return avgScore < 50 || streak === 0;
   }).length;
 

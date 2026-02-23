@@ -16,7 +16,7 @@ async function generateLearningPath(studentId: string, classroomId: string) {
   // Get student's quiz performance per subtopic
   const quizAttempts = await prisma.quizAttempt.findMany({
     where: {
-      userId: studentId,
+      studentId: studentId,
       quiz: { subtopicId: { in: subtopics.map((s) => s.id) } },
     },
     include: { quiz: true },
@@ -25,7 +25,7 @@ async function generateLearningPath(studentId: string, classroomId: string) {
 
   // Get lesson completion
   const completedLessons = await prisma.lessonProgress.findMany({
-    where: { userId: studentId, completed: true },
+    where: { studentId: studentId, completed: true },
     select: { lessonId: true },
   });
   const completedLessonIds = new Set(completedLessons.map((l) => l.lessonId));
@@ -37,7 +37,7 @@ async function generateLearningPath(studentId: string, classroomId: string) {
     const attempts = quizAttempts.filter((a) => a.quiz.subtopicId === subtopic.id);
     const latestAttempt = attempts[0];
     const avgScore = attempts.length
-      ? attempts.reduce((acc, a) => acc + (a.score / a.maxScore) * 100, 0) / attempts.length
+      ? attempts.reduce((acc, a) => acc + (a.score / a.total) * 100, 0) / attempts.length
       : null;
 
     // Check lesson completion for this subtopic

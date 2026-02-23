@@ -15,7 +15,7 @@ export async function POST(req: Request) {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     include: {
-      classrooms: {
+      enrolledClasses: {
         include: {
           classroom: {
             include: {
@@ -41,7 +41,10 @@ export async function POST(req: Request) {
     topicName = topic?.name || "";
   }
 
-  const classNames = user?.classrooms?.map((c: any) => c.classroom.name).join(", ") || "unknown";
+  const classNames =
+  user?.enrolledClasses
+    ?.map(e => e.classroom.name)
+    .join(", ") || "unknown";
 
   const systemPrompt = `You are EduBot, a friendly and encouraging AI tutor for Kenyan students using the CBC (Competency Based Curriculum) system.
 

@@ -153,6 +153,10 @@ export default async function DashboardPage() {
                   <h2 className="text-lg font-semibold">Payroll</h2>
                   <p className="text-gray-500 text-sm mt-1">Process teacher salaries with Kenya tax calculations</p>
                 </Link>
+                <Link href="/admin/fees" className="bg-white rounded shadow p-6 hover:shadow-md transition">
+                  <h2 className="text-lg font-semibold">💳 Fee Management</h2>
+                  <p className="text-gray-500 text-sm mt-1">Set fee structures and track M-Pesa payments</p>
+                </Link>
               </div>
             </div>
           )}
@@ -255,6 +259,16 @@ export default async function DashboardPage() {
                       >
                         🧠 My Path
                       </Link>
+                      <Link
+                      href={`/student/study-groups/${c.id}`}
+                      className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700"
+                    >
+                      👥 Groups
+                    </Link>
+                      <Link href="/student/fees" className="bg-green-50 border border-green-200 rounded shadow p-6 hover:shadow-md transition">
+                        <h2 className="text-lg font-semibold text-green-700">💚 School Fees</h2>
+                        <p className="text-gray-500 text-sm mt-1">View and pay school fees via M-Pesa</p>
+                      </Link>
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
@@ -320,13 +334,6 @@ export default async function DashboardPage() {
                     <h2 className="text-lg font-semibold">Bursary & Scholarships</h2>
                     <p className="text-gray-500 text-sm mt-1">Apply for financial assistance</p>
                   </Link>
-
-                  <Link
-                  href={`/student/study-groups/${c.id}`}
-                  className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700"
-                >
-                  👥 Groups
-                </Link>
                 </div>
                 <Leaderboard />
               </div>

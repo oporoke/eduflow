@@ -58,7 +58,7 @@ export async function GET(req: Request) {
     students = await prisma.user.findMany({
       where: { role: "STUDENT" },
       include: {
-        classrooms: { include: { classroom: true } },
+        enrolledClasses: { include: { classroom: true } },
       },
     });
   } else if (role === "TEACHER") {
@@ -67,23 +67,23 @@ export async function GET(req: Request) {
       include: {
         enrollments: {
           include: {
-            user: {
-              include: { classrooms: { include: { classroom: true } } },
+            student: {
+              include: { enrolledClasses: { include: { classroom: true } } },
             },
           },
         },
       },
     });
-    students = classrooms.flatMap((c) => c.enrollments.map((e) => e.user));
+    students = classrooms.flatMap((c) => c.enrollments.map((e) => e.student));
     students = [...new Map(students.map((s) => [s.id, s])).values()];
   }
 
   if (classroomId) {
-    const enrollment = await prisma.classEnrollment.findMany({
+    const enrollment = await prisma.enrollment.findMany({
       where: { classroomId },
-      select: { userId: true },
+      select: { studentId: true },
     });
-    const ids = enrollment.map((e) => e.userId);
+    const ids = enrollment.map((e) => e.studentId);
     students = students.filter((s) => ids.includes(s.id));
   }
 
@@ -92,11 +92,11 @@ export async function GET(req: Request) {
     students.map(async (student) => {
       // Quiz performance
       const quizAttempts = await prisma.quizAttempt.findMany({
-        where: { userId: student.id },
-        select: { score: true, maxScore: true },
+        where: { studentId: student.id },
+        select: { score: true, total: true },
       });
       const quizAvg = quizAttempts.length
-        ? (quizAttempts.reduce((acc, a) => acc + (a.score / a.maxScore) * 100, 0) / quizAttempts.length)
+        ? (quizAttempts.reduce((acc, a) => acc + (a.score / a.total) * 100, 0) / quizAttempts.length)
         : 100;
 
       // Assignment submission rate
@@ -114,22 +114,22 @@ export async function GET(req: Request) {
         where: { subtopic: { topic: { subject: { classroomId: { in: classroomIds } } } } },
       });
       const completedLessons = await prisma.lessonProgress.count({
-        where: { userId: student.id, completed: true },
+        where: { studentId: student.id, completed: true },
       });
       const lessonCompletionRate = totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 100;
 
       // Streak
-      const gameData = await prisma.gamification.findUnique({
+      const gameData = await prisma.userPoints.findUnique({
         where: { userId: student.id },
       });
       const streak = gameData?.streak || 0;
 
       // Pace votes
       const lostVotes = await prisma.paceVote.count({
-        where: { userId: student.id, vote: "LOST" },
+        where: { studentId: student.id, vote: "LOST" },
       });
       const totalVotes = await prisma.paceVote.count({
-        where: { userId: student.id },
+        where: { studentId: student.id },
       });
 
       const { score, level, signals } = calculateRiskScore({
@@ -164,7 +164,7 @@ export async function GET(req: Request) {
   // Auto-notify parents of HIGH risk students
   const highRisk = results.filter((r) => r.level === "HIGH");
   for (const risk of highRisk) {
-    const parent = await prisma.parentStudent.findFirst({
+    const parent = await prisma.parentChild.findFirst({
       where: { studentId: risk.student.id },
       include: { parent: true },
     });
