@@ -98,6 +98,13 @@ export default async function DashboardPage() {
                 <h2 className="text-lg font-semibold">Administration</h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Link
+                  href="/admin/principal"
+                  className="bg-blue-600 text-white rounded shadow p-6 hover:bg-blue-700 transition col-span-full md:col-span-1"
+                >
+                  <h2 className="text-lg font-semibold">🏫 Principal Dashboard</h2>
+                  <p className="text-blue-100 text-sm mt-1">School-wide performance overview — classes, teachers, at-risk students</p>
+                </Link>
                 <Link href="/admin/classes" className="bg-white rounded shadow p-6 hover:shadow-md transition">
                   <h2 className="text-lg font-semibold">Manage Classes</h2>
                   <p className="text-gray-500 text-sm mt-1">Create and manage classes</p>
@@ -314,6 +321,12 @@ export default async function DashboardPage() {
                     <p className="text-gray-500 text-sm mt-1">Apply for financial assistance</p>
                   </Link>
 
+                  <Link
+                  href={`/student/study-groups/${c.id}`}
+                  className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700"
+                >
+                  👥 Groups
+                </Link>
                 </div>
                 <Leaderboard />
               </div>

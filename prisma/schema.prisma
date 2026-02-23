@@ -77,6 +77,10 @@ model User {
   payrollPeriods        PayrollPeriod[]
   payslips              Payslip[]
   learningPaths         LearningPath[]
+  studyGroupsCreated    StudyGroup[]
+  studyGroupMembers     StudyGroupMember[]
+  studyGroupPosts       StudyGroupPost[]
+  studyGroupReplies     StudyGroupReply[]
 }
 
 model StaffProfile {
@@ -173,6 +177,7 @@ model Classroom {
   lessonObservations LessonObservation[]
   timetable          Timetable?
   learningPaths      LearningPath[]
+  studyGroups        StudyGroup[]
 }
 
 model Enrollment {
@@ -197,6 +202,7 @@ model Subject {
   topics         Topic[]
   weekPlans      WeekPlan[]
   timetableSlots TimetableSlot[]
+  studyGroups    StudyGroup[]
 }
 
 model Topic {
@@ -947,4 +953,70 @@ model AudioLesson {
   language   String   @default("en")
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+}
+
+model StudyGroup {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  classroom   Classroom @relation(fields: [classroomId], references: [id])
+  classroomId String
+  subject     Subject?  @relation(fields: [subjectId], references: [id])
+  subjectId   String?
+  createdBy   User      @relation(fields: [createdById], references: [id])
+  createdById String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  members StudyGroupMember[]
+  posts   StudyGroupPost[]
+}
+
+model StudyGroupMember {
+  id       String     @id @default(cuid())
+  group    StudyGroup @relation(fields: [groupId], references: [id])
+  groupId  String
+  user     User       @relation(fields: [userId], references: [id])
+  userId   String
+  role     String     @default("MEMBER")
+  joinedAt DateTime   @default(now())
+
+  @@unique([groupId, userId])
+}
+
+model StudyGroupPost {
+  id        String     @id @default(cuid())
+  group     StudyGroup @relation(fields: [groupId], references: [id])
+  groupId   String
+  author    User       @relation(fields: [authorId], references: [id])
+  authorId  String
+  content   String
+  fileUrl   String?
+  pinned    Boolean    @default(false)
+  upvotes   Int        @default(0)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  upvotedBy StudyGroupUpvote[]
+  replies   StudyGroupReply[]
+}
+
+model StudyGroupReply {
+  id        String         @id @default(cuid())
+  post      StudyGroupPost @relation(fields: [postId], references: [id])
+  postId    String
+  author    User           @relation(fields: [authorId], references: [id])
+  authorId  String
+  content   String
+  createdAt DateTime       @default(now())
+}
+
+model StudyGroupUpvote {
+  id        String         @id @default(cuid())
+  post      StudyGroupPost @relation(fields: [postId], references: [id])
+  postId    String
+  userId    String
+  createdAt DateTime       @default(now())
+
+  @@unique([postId, userId])
 }
