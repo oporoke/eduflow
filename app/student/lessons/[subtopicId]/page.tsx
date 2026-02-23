@@ -3,6 +3,7 @@
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import CommentSection from "@/components/CommentSection";
+import Link from "next/link";
 
 export default function StudentLessonsPage({ params }: { params: Promise<{ subtopicId: string }> }) {
   const { subtopicId } = use(params);

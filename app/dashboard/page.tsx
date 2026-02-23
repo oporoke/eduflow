@@ -242,6 +242,12 @@ export default async function DashboardPage() {
                           <h2 className="text-lg font-semibold">🤖 EduBot — AI Tutor</h2>
                           <p className="text-blue-100 text-sm mt-1">Get instant help from your AI tutor, 24/7</p>
                         </Link>
+                                            <Link
+                        href={`/student/learning-path/${c.id}`}
+                        className="bg-purple-600 text-white px-3 py-1 rounded text-sm hover:bg-purple-700"
+                      >
+                        🧠 My Path
+                      </Link>
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
@@ -261,6 +267,11 @@ export default async function DashboardPage() {
                         <p className="text-2xl font-bold text-purple-600">{c.totalLessons}</p>
                         <p className="text-xs text-gray-500">Lessons</p>
                       </div>
+                      <div className="bg-purple-50 border border-purple-200 rounded shadow p-6">
+                      <h2 className="text-lg font-semibold text-purple-700">🧠 Adaptive Learning Paths</h2>
+                      <p className="text-gray-500 text-sm mt-1">Personalized study recommendations based on your performance</p>
+                      <p className="text-xs text-gray-400 mt-2">Click "My Path" on any class card above</p>
+                    </div>
                     </div>
                   </div>
                 ))}
@@ -302,6 +313,7 @@ export default async function DashboardPage() {
                     <h2 className="text-lg font-semibold">Bursary & Scholarships</h2>
                     <p className="text-gray-500 text-sm mt-1">Apply for financial assistance</p>
                   </Link>
+
                 </div>
                 <Leaderboard />
               </div>
