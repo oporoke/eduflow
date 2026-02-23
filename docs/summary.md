@@ -615,3 +615,16 @@ Here's the plan:
 **Important note:** We'll use Safaricom's Daraja API sandbox for development. You'll need a free Daraja account at developer.safaricom.co.ke to get sandbox credentials.
 
 ---
+Great choice. Multilingual support is the feature that unlocks rural Kenya — millions of learners who think and learn better in Kiswahili or their mother tongue. It's also a massive competitive differentiator since no CBC platform does this well.
+
+Here's the plan:
+
+**What we'll build:**
+- A language switcher (English / Kiswahili) accessible from every page
+- All core UI strings translated to Kiswahili
+- Teachers can write lesson content in Kiswahili or mark it as bilingual
+- Gemini-powered auto-translation — teachers click "Translate to Kiswahili" on any lesson
+- EduBot responds in Kiswahili when the student writes in Kiswahili (already works)
+- Language preference saved per user
+- A translation API route that teachers can use for any text content
+

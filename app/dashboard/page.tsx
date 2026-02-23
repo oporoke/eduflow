@@ -6,6 +6,7 @@ import NotificationBell from "@/components/NotificationBell";
 import SearchBar from "@/components/SearchBar";
 import GamificationPanel from "@/components/GamificationPanel";
 import Leaderboard from "@/components/Leaderboard";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -73,10 +74,12 @@ export default async function DashboardPage() {
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div>
+            <LanguageSwitcher />
             <h1 className="text-2xl font-bold">Welcome, {user.name}</h1>
             <span className="text-sm text-gray-500 capitalize">{role.toLowerCase()}</span>
           </div>
-          <div className="flex gap-4">
+          <div className="flex gap-4 items-center">
+            <LanguageSwitcher />
             <Link href="/announcements" className="text-sm text-gray-600 hover:text-blue-600">
               📢 Announcements
             </Link>

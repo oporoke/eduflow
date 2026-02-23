@@ -5,12 +5,14 @@ import { useRouter } from "next/navigation";
 import CommentSection from "@/components/CommentSection";
 import Link from "next/link";
 import AudioPlayer from "@/components/AudioPlayer";
+import TranslateButton from "@/components/TranslateButton";
 
 export default function StudentLessonsPage({ params }: { params: Promise<{ subtopicId: string }> }) {
   const { subtopicId } = use(params);
   const router = useRouter();
   const [lessons, setLessons] = useState<any[]>([]);
   const [progress, setProgress] = useState<{ [lessonId: string]: boolean }>({});
+  const [translatedContent, setTranslatedContent] = useState("");
 
   useEffect(() => {
     fetchLessons();
@@ -100,7 +102,17 @@ export default function StudentLessonsPage({ params }: { params: Promise<{ subto
                 </div>
 
                 {lesson.text && (
-                  <p className="text-gray-700 text-sm leading-relaxed">{lesson.text}</p>
+                  <div>
+                    <div className="flex justify-end mb-2">
+                      <TranslateButton
+                        text={lesson.text}
+                        onTranslated={(translated) => setTranslatedContent(translated)}
+                      />
+                    </div>
+                    <div className="prose max-w-none">
+                      {translatedContent || lesson.text}
+                    </div>
+                  </div>
                 )}
 
                 {lesson.imageUrl && (

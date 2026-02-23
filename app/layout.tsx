@@ -7,6 +7,8 @@ import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 import InstallPrompt from "@/components/InstallPrompt";
 import AccessibilityToolbar from "@/components/AccessibilityToolbar";
 import EmergencyAlertBanner from "@/components/EmergencyAlertBanner";
+import {LanguageProvider} from "@/lib/language-context";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -56,8 +58,8 @@ export default function RootLayout({
         <title>EduFlow - Digital Learning Platform</title>
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-
-        <Providers>
+        <LanguageProvider>
+          <Providers>
           <a href="#main-content" className="skip-link">Skip to main content</a>
           <EmergencyAlertBanner />
           <ServiceWorkerRegistration />
@@ -65,6 +67,7 @@ export default function RootLayout({
           <AccessibilityToolbar />
           {children}
         </Providers>
+        </LanguageProvider>
       </body>
     </html>
   );
