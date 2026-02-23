@@ -442,3 +442,16 @@ Here's what we'll build:
 - Parent gets notified automatically when student hits High Risk
 - Dashboard shows trend over time so teachers can see if interventions are working
 
+---
+**Early Warning System is complete! 🎉**
+
+Now let's build **Feature 2: AI Student Tutor** — a 24/7 conversational tutor powered by Gemini that students can chat with to get help on any topic.
+
+Here's what we'll build:
+- Chat interface students can access from any lesson or from their dashboard
+- Gemini answers questions tailored to the student's grade/class level
+- Tutor is aware of the current subject/topic context
+- Conversation history maintained within the session
+- Quick prompt suggestions so students know what to ask
+- Teachers can see what topics students are asking about most
+

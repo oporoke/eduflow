@@ -51,6 +51,12 @@ export default function StudentLessonsPage({ params }: { params: Promise<{ subto
           <button onClick={() => router.back()} className="text-sm text-blue-600 hover:underline">
             Back
           </button>
+          <Link
+            href={`/student/tutor?subject=${encodeURIComponent(lesson?.subtopic?.topic?.subject?.name || "")}&topic=${encodeURIComponent(lesson?.subtopic?.topic?.name || "")}`}
+            className="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 flex items-center gap-2"
+          >
+            🤖 Ask EduBot
+          </Link>
         </div>
 
         {/* Progress Bar */}
