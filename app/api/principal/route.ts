@@ -35,12 +35,12 @@ export async function GET() {
 
   // Quiz performance — select only needed fields
   const quizAttempts = await prisma.quizAttempt.findMany({
-    select: { score: true, maxScore: true },
+    select: { score: true, total: true },
   });
 
   const schoolAvgScore = quizAttempts.length
     ? Math.round(
-        quizAttempts.reduce((acc, a) => acc + (a.score / a.maxScore) * 100, 0) /
+        quizAttempts.reduce((acc, a) => acc + (a.score / a.total) * 100, 0) /
           quizAttempts.length
       )
     : 0;
@@ -51,7 +51,7 @@ export async function GET() {
       id: true,
       name: true,
       teacher: { select: { id: true, name: true } },
-      enrollments: { select: { userId: true } },
+      enrollments: { select: { studentId: true } },
       assignments: { select: { id: true } },
       subjects: {
         select: {
@@ -70,22 +70,22 @@ export async function GET() {
   });
 
   // Get quiz attempts per student in bulk
-  const allStudentIds = classrooms.flatMap((c) => c.enrollments.map((e) => e.userId));
+  const allStudentIds = classrooms.flatMap((c) => c.enrollments.map((e) => e.studentId));
   const uniqueStudentIds = [...new Set(allStudentIds)];
 
   const [allAttempts, allLessonProgress] = await Promise.all([
     prisma.quizAttempt.findMany({
-      where: { userId: { in: uniqueStudentIds } },
-      select: { userId: true, score: true, maxScore: true },
+      where: { studentId: { in: uniqueStudentIds } },
+      select: { studentId: true, score: true, total: true },
     }),
     prisma.lessonProgress.findMany({
-      where: { userId: { in: uniqueStudentIds }, completed: true },
-      select: { userId: true, lessonId: true },
+      where: { studentId: { in: uniqueStudentIds }, completed: true },
+      select: { studentId: true, lessonId: true },
     }),
   ]);
 
   // Build lookup maps
-  const attemptsByUser = new Map<string, { score: number; maxScore: number }[]>();
+  const attemptsByUser = new Map<string, { score: number; total: number }[]>();
   for (const attempt of allAttempts) {
     if (!attemptsByUser.has(attempt.userId)) attemptsByUser.set(attempt.userId, []);
     attemptsByUser.get(attempt.userId)!.push(attempt);
@@ -103,7 +103,7 @@ export async function GET() {
 
     const avgScore = classAttempts.length
       ? Math.round(
-          classAttempts.reduce((acc, a) => acc + (a.score / a.maxScore) * 100, 0) /
+          classAttempts.reduce((acc, a) => acc + (a.score / a.total) * 100, 0) /
             classAttempts.length
         )
       : 0;
@@ -258,7 +258,7 @@ export async function GET() {
   const atRiskCount = uniqueStudentIds.filter((studentId) => {
     const attempts = attemptsByUser.get(studentId) || [];
     const avgScore = attempts.length
-      ? attempts.reduce((acc, a) => acc + (a.score / a.maxScore) * 100, 0) / attempts.length
+      ? attempts.reduce((acc, a) => acc + (a.score / a.total) * 100, 0) / attempts.length
       : 100;
     return avgScore < 50;
   }).length;
