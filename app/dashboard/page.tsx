@@ -102,6 +102,10 @@ export default async function DashboardPage() {
                   <h2 className="text-lg font-semibold">Manage Classes</h2>
                   <p className="text-gray-500 text-sm mt-1">Create and manage classes</p>
                 </Link>
+                <Link href="/admin/early-warning" className="bg-red-50 border border-red-200 rounded shadow p-6 hover:shadow-md transition">
+                  <h2 className="text-lg font-semibold text-red-700">🎯 Early Warning System</h2>
+                  <p className="text-gray-500 text-sm mt-1">Identify and support at-risk students</p>
+                </Link>
                 <Link href="/admin/users" className="bg-white rounded shadow p-6 hover:shadow-md transition">
                   <h2 className="text-lg font-semibold">Manage Users</h2>
                   <p className="text-gray-500 text-sm mt-1">View and manage all users</p>
@@ -170,6 +174,10 @@ export default async function DashboardPage() {
                       <Link href="/teacher/leave" className="bg-white rounded shadow p-4 hover:shadow-md transition block mt-3">
                         <h3 className="font-semibold text-sm">Leave Applications</h3>
                         <p className="text-gray-500 text-xs mt-1">Apply for and track your leave requests</p>
+                      </Link>
+                      <Link href="/teacher/early-warning" className="bg-red-50 border border-red-100 rounded shadow p-4 hover:shadow-md transition block mt-3">
+                        <h3 className="font-semibold text-sm text-red-700">🎯 Early Warning</h3>
+                        <p className="text-gray-500 text-xs mt-1">Monitor at-risk students in your classes</p>
                       </Link>
                       <Link
                         href={`/teacher/curriculum/${c.id}`}
