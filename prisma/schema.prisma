@@ -239,6 +239,7 @@ model Lesson {
   progress           LessonProgress[]
   comments           Comment[]
   lessonCompetencies LessonCompetency[]
+  audioLesson        AudioLesson?
 }
 
 model LessonProgress {
@@ -933,4 +934,17 @@ model LearningPathItem {
   completed   Boolean      @default(false)
   completedAt DateTime?
   createdAt   DateTime     @default(now())
+}
+
+model AudioLesson {
+  id         String   @id @default(cuid())
+  lesson     Lesson   @relation(fields: [lessonId], references: [id])
+  lessonId   String   @unique
+  audioUrl   String
+  duration   Int?
+  transcript String?
+  chapters   Json?
+  language   String   @default("en")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }

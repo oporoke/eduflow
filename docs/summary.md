@@ -480,3 +480,30 @@ Here's the plan:
 - Teachers see which students are on remedial vs advanced tracks
 - Path items have 3 types: **Revisit** (struggling), **Practice** (needs reinforcement), **Advance** (ready for more)
 
+---
+**Adaptive Learning Paths is complete! 🎉**
+
+Here's what we've built in this round:
+
+- ✅ Predictive Early Warning System
+- ✅ AI Student Tutor — EduBot
+- ✅ Adaptive Learning Paths
+
+EduFlow now has a genuine AI-powered learning engine — it watches every student, predicts who is struggling, tutors them on demand, and automatically adjusts what they should study next. No CBC platform in Kenya has all three of these working together.
+
+What's next?
+
+---
+Great choice. Voice Notes & Audio Lessons tackles one of Kenya's biggest EdTech barriers — many students learn better by listening, and teachers in rural areas need lightweight content creation tools that work even on slow connections.
+
+Here's the plan:
+
+**What we'll build:**
+- Teachers can record audio directly in the browser and attach it to any lesson
+- Teachers can also upload pre-recorded audio files (MP3, WAV, M4A)
+- Students see an audio player on lessons that have voice notes
+- Teachers can add timestamped chapter markers to audio (e.g. "00:30 — Introduction")
+- Audio lessons work offline once cached by the service worker
+- Students can slow down or speed up playback (0.5x to 2x)
+- A dedicated "Audio Lessons" filter so students can find audio content quickly
+

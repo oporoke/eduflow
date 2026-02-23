@@ -4,6 +4,7 @@ import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import { UploadButton } from "@/lib/uploadthing";
 import AIAssistant from "@/components/AIAssistant";
+import AudioRecorder from "@/components/AudioRecorder";
 
 export default function LessonPage({ params }: { params: Promise<{ subtopicId: string }> }) {
   const { subtopicId } = use(params);
@@ -197,6 +198,7 @@ export default function LessonPage({ params }: { params: Promise<{ subtopicId: s
               </div>
             )}
 
+
             <button
               onClick={handleSubmit}
               className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
@@ -228,6 +230,11 @@ export default function LessonPage({ params }: { params: Promise<{ subtopicId: s
                     <video src={lesson.videoUrl} controls className="mt-3 rounded w-full max-h-48" />
                   )
                 )}
+                <AudioRecorder
+                  lessonId={lesson.id}
+                  existingAudio={lesson.audioLesson}
+                  onSaved={() => fetchLesson()}
+                />
               </div>
             ))
           )}

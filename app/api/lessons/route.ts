@@ -14,6 +14,9 @@ export async function GET(req: Request) {
 
   const lessons = await prisma.lesson.findMany({
     where: { subtopicId },
+    include: {
+      audioLesson: true,
+    },
     orderBy: { createdAt: "asc" },
   });
 

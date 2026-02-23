@@ -4,6 +4,7 @@ import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import CommentSection from "@/components/CommentSection";
 import Link from "next/link";
+import AudioPlayer from "@/components/AudioPlayer";
 
 export default function StudentLessonsPage({ params }: { params: Promise<{ subtopicId: string }> }) {
   const { subtopicId } = use(params);
@@ -126,6 +127,15 @@ export default function StudentLessonsPage({ params }: { params: Promise<{ subto
                   ) : (
                     <video src={lesson.videoUrl} controls className="mt-3 rounded w-full max-h-56" />
                   )
+                )}
+                {lesson.audioLesson && (
+                  <AudioPlayer
+                    audioUrl={lesson.audioLesson.audioUrl}
+                    duration={lesson.audioLesson.duration}
+                    chapters={lesson.audioLesson.chapters || []}
+                    transcript={lesson.audioLesson.transcript}
+                    language={lesson.audioLesson.language}
+                  />
                 )}
                 <CommentSection lessonId={lesson.id} />
               </div>
