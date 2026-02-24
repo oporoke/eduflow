@@ -37,7 +37,8 @@ export default function NotificationBell() {
   };
 
   // const unreadCount = notifications.filter((n) => !n.read).length;
-  const unreadCount = (notifications || []).filter((n) => !n.read).length;
+  const safeNotifications = Array.isArray(notifications) ? notifications : [];
+  const unreadCount = safeNotifications.filter((n) => !n.read).length;
 
   return (
     <div className="relative">
