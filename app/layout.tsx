@@ -24,23 +24,21 @@ export const metadata: Metadata = {
   title: "EduFlow - Digital Learning Platform",
   description: "CBC-aligned Learning Management System for Kenyan Schools",
   manifest: "/manifest.json",
-  themeColor: "#2563eb",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "EduFlow",
-  },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
   },
   icons: {
     icon: "/icons/icon-192x192.png",
     apple: "/icons/icon-152x152.png",
   },
 };
-
+export const viewport = {
+  themeColor: '#2563eb',
+  width: 'device-width',
+  initialScale: 1,
+}
 export default function RootLayout({
   children,
 }: Readonly<{
