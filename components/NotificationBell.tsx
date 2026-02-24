@@ -36,7 +36,8 @@ export default function NotificationBell() {
     fetchNotifications();
   };
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  // const unreadCount = notifications.filter((n) => !n.read).length;
+  const unreadCount = (notifications || []).filter((n) => !n.read).length;
 
   return (
     <div className="relative">
